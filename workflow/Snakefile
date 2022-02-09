@@ -1,8 +1,22 @@
 # Main entrypoint of the workflow.
 configfile: "config/config.yaml"
 
+# Calculate pairs here
+with open( "resources/pairs.txt", "r" ) as pair_file:
+    PAIRS = dict()
+    for line in pair_file:
+        pair = line.strip().split( "," )
+        short_name = line.strip().replace( ",", "-" ).replace( " ", "" )
+        PAIRS[short_name] = pair
+print( PAIRS )
+
 rule all:
     input:
-        nulls = expand( "results/trees/null_{null}.tree", null=range(1,11) )
+        nulls = expand( "results/trees/null_{num}.tree", num=range(1,11) ),
+        pruned_null_trees = expand( "results/trees/{pair}/{pair}.null.{num}.tree", pair=PAIRS, num=range(1,11) ),
+        pruned_actual_trees= expand( "results/trees/{pair}/{pair}.actual.{num}.tree", pair=PAIRS, num=[1] )
+# Include support functions for pipeline
+include: "rules/support.smk"
 
+# Include phylosor rules for pipeline
 include: "rules/phylosor.smk"
