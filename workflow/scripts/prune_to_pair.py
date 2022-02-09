@@ -25,17 +25,15 @@ def prune_to_pair( md_loc, id_col, location_col, tree_loc, pair, output_loc ):
     print( "Pruning tree...", end="" )
     with NamedTemporaryFile( mode="w" ) as tf:
         tf.write( "\n".join( md[id_col].to_list() ) )
-        run( f"gotree prune -r -i {tree_loc} -f {tf.name} -o {output_loc}" )
+        run( f"gotree prune -r -i {tree_loc} -f {tf.name} -o {output_loc}", shell=True )
         print( f"Done in {time.time()-starting_time:.1f} seconds" )
 
-with open( snakemake.log[0], "w" ) as f:
-    sys.stderr = sys.stdout = f
-    prune_to_pair( md_loc=snakemake.input.metadata,
-                   id_col=snakemake.params.id_col,
-                   location_col=snakemake.params.location_col,
-                   tree_loc=snakemake.input.tree,
-                   pair=snakemake.params.pair_list,
-                   output_loc=snakemake.output.pruned_tree )
+prune_to_pair( md_loc=snakemake.input.metadata,
+               id_col=snakemake.params.id_col,
+               location_col=snakemake.params.location_col,
+               tree_loc=snakemake.input.tree,
+               pair=snakemake.params.pair_list,
+               output_loc=snakemake.output.pruned_tree )
 
 #if __name__ == "__main__":
 #    parser = argparse.ArgumentParser( description="" )

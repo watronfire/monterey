@@ -2,10 +2,13 @@ input_locations:
   tree: "resources/uncondensed-final-tree.nh"
   metadata: "resources/combined_md.csv"
 
-generate_nulls:
-  groupby: "site"
+columns:
   id_col: "accession_id"
   date_col: "date_collected"
+  location_col: "site"
+
+generate_nulls:
+  groupby: "site"
 
 compute_phylosor:
   window_size: 30
