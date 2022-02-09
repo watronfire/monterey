@@ -8,7 +8,6 @@ with open( "resources/pairs.txt", "r" ) as pair_file:
         pair = line.strip().split( "," )
         short_name = line.strip().replace( ",", "-" ).replace( " ", "" )
         PAIRS[short_name] = pair
-print( PAIRS )
 
 rule all:
     input:
