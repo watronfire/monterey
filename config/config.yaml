@@ -1,0 +1,8 @@
+input_locations:
+  tree: "resources/uncondensed-final-tree.nh"
+  metadata: "resources/combined_md.csv"
+
+generate_nulls:
+  groupby: "site"
+  id_col: "accession_id"
+  date_col: "date_collected"
