@@ -5,14 +5,18 @@ import argparse
 from tempfile import NamedTemporaryFile
 import sys
 
-def prune_to_pair( md_loc, id_col, location_col, tree_loc, pair, output_loc ):
+def prune_to_pair( md_loc, id_col, date_col, location_col, tree_loc, pair, output_loc, max_date=None ):
     gotree_output = run( f"gotree labels -i {tree_loc}", capture_output=True, text=True, shell=True )
     tip_labels = gotree_output.stdout.split( "\n" )
 
-    md = pd.read_csv( md_loc, usecols=[id_col,location_col] )
+    md = pd.read_csv( md_loc, usecols=[id_col,date_col,location_col] )
 
     # Subset metadata to just sequences in tree
     md = md.loc[md[id_col].isin( tip_labels )]
+
+    # Remove sequences after date if specified
+    if max_date:
+        md = md.loc[md[date_col]<max_date]
 
     # Subset metadata to just sequences in pair + Other
     md = md.loc[md[location_col].isin(pair + ["Other"])]
@@ -30,10 +34,12 @@ def prune_to_pair( md_loc, id_col, location_col, tree_loc, pair, output_loc ):
 
 prune_to_pair( md_loc=snakemake.input.metadata,
                id_col=snakemake.params.id_col,
+               date_col=snakemake.params.date_col,
                location_col=snakemake.params.location_col,
                tree_loc=snakemake.input.tree,
                pair=snakemake.params.pair_list,
-               output_loc=snakemake.output.pruned_tree )
+               output_loc=snakemake.output.pruned_tree,
+               max_date=snakemake.params.date_max )
 
 #if __name__ == "__main__":
 #    parser = argparse.ArgumentParser( description="" )

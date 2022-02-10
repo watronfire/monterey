@@ -25,7 +25,9 @@ rule prune_tree_to_pair:
     params:
         pair_list = lambda wildcards: PAIRS[wildcards.pair],
         id_col = config["columns"]["id_col"],
-        location_col = config["columns"]["location_col"]
+        date_col = config["columns"]["date_col"],
+        location_col = config["columns"]["location_col"],
+        date_max = config["prune_tree_to_pair"]["date_max"]
     output:
         pruned_tree = "results/trees/{pair}/{pair}.{status}.{num}.tree"
     script: "../scripts/prune_to_pair.py"
