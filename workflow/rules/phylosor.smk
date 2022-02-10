@@ -39,6 +39,7 @@ rule compute_phylosor:
         tree = rules.prune_tree_to_pair.output.pruned_tree,
         metadata = config["input_locations"]["metadata"]
     params:
+        pair_list = lambda wildcards: PAIRS[wildcards.pair],
         window_size = config["compute_phylosor"]["window_size"]
     output:
         results = "results/phylosor/{pair}/{pair}.{status}.{num}.csv"

@@ -59,12 +59,12 @@ phylosorTable <- function( tree, metadata, locations, window ) {
     return( return_df )
 }
 
-t <- read.tree( snakemake@input[["tree"]] )
+t <- read.tree( snakemake@input[["tree"]] ) %>% root( outgroup = "EPI_ISL_402125", resolve.root = TRUE )
 # Hardcode these for now, but should follow the rest of the program in no assuming them.
 md <- read.csv( snakemake@input[["metadata"]] ) %>%
   select( accession_id, date_collected, site ) %>%
   filter( accession_id %in% t$tip.label ) %>%
   mutate( date_collected = as.Date( date_collected ) )
-results <- phylosorTable( t, md, snakemake@params[["pair_list"]], as.integer( snakemake@params[["window"]] ) )
-
+save.image( file="/gpfs/home/natem/analysis/2022.02.08_phylosor/monterey/.RData")
+results <- phylosorTable( t, md, snakemake@params[["pair_list"]], as.integer( snakemake@params[["window_size"]] ) )
 write.csv( results, snakemake@output[["results"]] )
