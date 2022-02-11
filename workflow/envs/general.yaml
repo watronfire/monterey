@@ -13,6 +13,7 @@ dependencies:
   - gofasta
   - r-ape=5.4-1
   - r-picante=1.8.1
-  - r-dplyr=1.07
+  - r-dplyr=1.0.7
   - r-phytools
   - r-lubridate
+  - r-r.utils

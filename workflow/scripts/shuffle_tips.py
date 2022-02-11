@@ -4,8 +4,11 @@ from epiweeks import Week
 from subprocess import run
 
 def shuffle_tips( tree, metadata, id_col, date_col, map_file, output_loc ):
-    t = Tree.get( path=tree, schema="newick", preserve_underscores=True )
-    tip_labels = [i.taxon.label for i in t.leaf_node_iter()]
+    
+    # Get all the tips in tree
+    gotree_output = run( f"gotree labels -i {tree}", capture_output=True, text=True, shell=True )
+    tip_labels = gotree_output.stdout.split( "\n" )
+
     md = pd.read_csv( metadata, usecols=[id_col, date_col], parse_dates=[date_col] )
     md = md.loc[md[id_col].isin( tip_labels )]
     assert md.shape[0] > 0, f"{id_col} column of metadata doesn't contain any tree tips"
