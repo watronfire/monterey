@@ -45,7 +45,7 @@ rule compute_phylosor:
         window_size = config["compute_phylosor"]["window_size"]
     output:
         results = "results/phylosor/{pair}/{pair}.{status}.{num}.csv"
-    script: "../scripts/phylosor.R"
+    script: "../scripts/phylosor_table.py"
 
 rule combine_results:
     message: "Combine phylosor results for all comparisons"
