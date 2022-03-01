@@ -64,7 +64,7 @@ def phylosor_table( tree_loc, md_loc, siteA, siteB, window, output_loc ):
             continue
 
         entry = phylosor( tree, communityA, communityB )
-        entry.extend( [date_seq[i].date, siteA, len( communityA), siteB, len( communityB )] )
+        entry.extend( [date_seq[i].strftime( "%Y-%m-%d"), siteA, len( communityA), siteB, len( communityB )] )
         output_df.append( entry )
 
         print( f"Completed {i} of {len(date_seq)} comparisons (took {time.time() - start_time:.1f} seconds)." )

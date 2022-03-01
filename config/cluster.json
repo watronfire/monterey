@@ -1,7 +1,7 @@
 {
   "__default__" :
   {
-    "walltime" : "12:00:00",
+    "walltime" : "24:00:00",
     "mem" : "5gb",
     "queue" : "shared",
     "logfile" : "/gpfs/home/natem/logs/phylosor.txt",
