@@ -54,6 +54,6 @@ rule combine_results:
     input:
         results_nulls = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv",pair=PAIRS,num=range( 1,11 ) ),
         results_actual = expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv",pair=PAIRS,num=[1] )
-   output:
+    output:
         results = "results/output/phylosor_results.csv"
     script: "../scripts/combine_results.py"
