@@ -52,7 +52,8 @@ rule combine_results:
     conda: "../envs/general.yaml"
     log: "logs/combine_results.txt"
     input:
-        results = expand( "results/phylosor/{pair}/{pair}.{status}.{num}.csv", pair=PAIRS, status=["actual", "null"], num=range(1,11) )
-    output:
+        results_nulls = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv",pair=PAIRS,num=range( 1,11 ) ),
+        results_actual = expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv",pair=PAIRS,num=[1] )
+   output:
         results = "results/output/phylosor_results.csv"
     script: "../scripts/combine_results.py"
