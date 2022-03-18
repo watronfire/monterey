@@ -10,6 +10,7 @@ def phylosor( tree, comA, comB ):
     tree0 = tree.extract_tree()
     for i in tree0.leaf_nodes():
         if i.taxon.label in comA:
+            blA += i.edge_length
             for j in i.ancestor_iter():
                 if getattr( j, "comA", False ):
                     break
@@ -19,6 +20,7 @@ def phylosor( tree, comA, comB ):
                     if getattr( j, "comB", False ):
                         blBoth += j.edge.length
         elif i.taxon.label in comB:
+            blB += i.edge_length
             for j in i.ancestor_iter():
                 if getattr( j, "comB", False ):
                     break
