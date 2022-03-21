@@ -2,6 +2,12 @@ from dendropy import Tree
 import pandas as pd
 import time
 
+def get_edge_length( node ):
+    if node.edge_length is None:
+        return 0
+    else:
+        return node.edge_length
+
 def phylosor( tree, comA, comB ):
     blA = 0
     blB = 0
@@ -10,7 +16,7 @@ def phylosor( tree, comA, comB ):
     tree0 = tree.extract_tree()
     for i in tree0.leaf_nodes():
         if i.taxon.label in comA:
-            blA += i.edge_length
+            blA += get_edge_length( i )
             for j in i.ancestor_iter():
                 if getattr( j, "comA", False ):
                     break
@@ -20,7 +26,7 @@ def phylosor( tree, comA, comB ):
                     if getattr( j, "comB", False ):
                         blBoth += j.edge.length
         elif i.taxon.label in comB:
-            blB += i.edge_length
+            blB += get_edge_length( i )
             for j in i.ancestor_iter():
                 if getattr( j, "comB", False ):
                     break
