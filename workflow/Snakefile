@@ -4,10 +4,14 @@ configfile: "config/config.yaml"
 # Calculate pairs here
 with open( "resources/pairs.txt", "r" ) as pair_file:
     PAIRS = dict()
+    JS_PAIRS = dict()
     for line in pair_file:
         pair = line.strip().split( "," )
         short_name = line.strip().replace( ",", "-" ).replace( " ", "" )
         PAIRS[short_name] = pair
+        if pair[0] != pair[1]:
+            JS_PAIRS[short_name] = pair
+
 
 rule all:
     input:
@@ -17,7 +21,7 @@ rule all:
         results_nulls = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
         results_actual = expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ),
         results_combined = "results/output/phylosor_results.csv",
-        js_results = expand( "results/js/{pair}.js.csv", pair=PAIRS )
+        js_results = expand( "results/js/{pair}.js.csv", pair=JS_PAIRS )
 # Include support functions for pipeline
 include: "rules/support.smk"
 

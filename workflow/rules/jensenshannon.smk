@@ -5,7 +5,7 @@ rule compute_jensenshannon:
     input:
         metadata = config["input_locations"]["metadata"]
     params:
-        pair_list = lambda wildcards: PAIRS[wildcards.pair],
+        pair_list = lambda wildcards: JS_PAIRS[wildcards.pair],
         resolution = config["compute_js"]["resolution"]
     output:
         results = "results/js/{pair}.js.csv"
