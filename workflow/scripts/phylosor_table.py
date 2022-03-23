@@ -70,6 +70,21 @@ def generate_date_seq( metadata, query, verbose=True ):
     return pd.date_range( start=min_date, end=max_date )
 
 
+def shuffle_location( metadata, location, verbose=True ):
+    if verbose:
+        print( f"Shuffling tips from {location} for inter-location analysis...", end="" )
+    start_time = time.time()
+    return_md = metadata.copy()
+
+    from epiweeks import Week
+    from numpy.random import choice
+    return_md["week"] = return_md["date_collected"].apply( lambda x: Week.fromdate( x ).startdate() )
+    return_md.loc[return_md["site"]==location,"site_shuffled"] = return_md.loc[return_md["site"]==location].groupby( "week" )["site"].transform( lambda x: choice( ["A", "B"], len( x ) ) )
+    if verbose:
+        print( f"Done in {time.time() - start_time:.1f} seconds" )
+    return return_md 
+
+
 def phylosor_table( tree, metadata, queryA, nameA, queryB, nameB, window, verbose=True ):
 
     date_seq = generate_date_seq( metadata, queryA|queryB )
@@ -107,11 +122,18 @@ if __name__ == "__main__":
 
     md = load_metadata( md_loc=snakemake.input.metadata, tip_labels=tl )
 
+    pair_list = snakemake.params.pair_list
+
     # TODO: this will be the place to generate between or within-location queries
-    name_A = snakemake.params.pair_list[0]
-    query_A = md["site"]== name_A
-    name_B = snakemake.params.pair_list[1]
-    query_B = md["site"]== name_B
+    name_A = pair_list[0]
+    name_B = pair_list[1]
+    if pair_list[0] == pair_list[1]:
+        md = shuffle_location( md, pair_list[0] )
+        query_A = md["site_shuffled"] == "A"
+        query_B = md["site_shuffled"] == "B"
+    else:
+        query_A = md["site"]== name_A
+        query_B = md["site"]== name_B
 
     output = phylosor_table( tree=t,
                              metadata=md,
