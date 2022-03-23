@@ -16,9 +16,13 @@ rule all:
         pruned_actual_trees= expand( "results/trees/{pair}/{pair}.actual.{num}.tree", pair=PAIRS, num=[1] ),
         results_nulls = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
         results_actual = expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ),
-        results_combined = "results/output/phylosor_results.csv"
+        results_combined = "results/output/phylosor_results.csv",
+        js_results = expand( "results/js/{pair}.js.csv", pair=PAIRS )
 # Include support functions for pipeline
 include: "rules/support.smk"
 
 # Include phylosor rules for pipeline
 include: "rules/phylosor.smk"
+
+# Include jensen-shannon rules
+include: "rules/jensenshannon.smk"
