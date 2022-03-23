@@ -35,4 +35,6 @@ def apply_jensenshannon( df ):
 if __name__ == "__main__":
     md = load_metadata( snakemake.input.metadata, snakemake.params.pair_list )
     results = md.groupby( snakemake.params.resolution ).apply( js_bootstrap, func=apply_jensenshannon )
+    results["siteA"] = snakemake.params.pair_list[0]
+    results["siteB"] = snakemake.params.pair_list[1]
     results.to_csv( snakemake.output.results )
