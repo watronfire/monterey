@@ -10,6 +10,8 @@ dependencies:
   - pandas
   - dendropy
   - epiweeks
+  - scipy
+  - numpy
   - gofasta
   - r-ape=5.4-1
   - r-picante=1.8.1
