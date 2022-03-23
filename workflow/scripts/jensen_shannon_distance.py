@@ -16,11 +16,11 @@ def load_metadata( md_loc, pair, verbose=True ):
         print( f"Found {metadata.shape[0]} genomes in {time.time() - starting_time:.1f} seconds" )
     return metadata
 
-def genome_bootstrap( df, func, replicates=100 ):
+def genome_bootstrap( df, fun, replicates=100 ):
     result_list = list()
     for _ in range( replicates ):
         trial = df.groupby( "site" ).sample( frac=1, replace=True )
-        result_list.append( func( trial ) )
+        result_list.append( fun( trial ) )
     res = np.quantile( result_list, q=[0.025, 0.5, 0.975] )
     return {k:j for k,j in zip( ["js_5", "js_mean", "js_95"], res )}
 
@@ -34,7 +34,9 @@ def apply_jensenshannon( df ):
 
 if __name__ == "__main__":
     md = load_metadata( snakemake.input.metadata, snakemake.params.pair_list )
-    results = md.groupby( snakemake.params.resolution ).apply( js_bootstrap, func=apply_jensenshannon )
+    results = md.groupby( snakemake.params.resolution ).apply( genome_bootstrap, fun=apply_jensenshannon )
+    results = pd.DataFrame( results.to_list(), index=results.index )
+    results = results.dropna()
     results["siteA"] = snakemake.params.pair_list[0]
     results["siteB"] = snakemake.params.pair_list[1]
     results.to_csv( snakemake.output.results )
