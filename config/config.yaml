@@ -16,3 +16,6 @@ prune_tree_to_pair:
 compute_phylosor:
   window_size: 30
 
+comput_js:
+  resolution: "week"
+
