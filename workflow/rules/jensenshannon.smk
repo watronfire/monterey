@@ -8,5 +8,6 @@ rule compute_jensenshannon:
         pair_list = lambda wildcards: JS_PAIRS[wildcards.pair],
         resolution = config["compute_js"]["resolution"]
     output:
-        results = "results/js/{pair}.js.csv"
+        results = "results/js/{pair}.js.csv",
+        plot = "results/js/{pair}.js.pdf"
     script: "../scripts/jensen_shannon_distance.py"
