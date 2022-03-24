@@ -1,4 +1,4 @@
-rule prune_tree_to_pair:
+rule prune_tree_to_pair_newnull:
     message: "Prune tree to only sequences from pair: {wildcards.pair}"
     conda: "../envs/general.yaml"
     log: "logs/{pair}.pruning.txt"
@@ -15,7 +15,7 @@ rule prune_tree_to_pair:
         pruned_tree = "results/trees/{pair}/{pair}.tree"
     script: "../scripts/prune_to_pair.py"
 
-rule compute_phylosor:
+rule compute_phylosor_newnull:
     message: "Compute {wildcards.status} phylosor across time for pair: {wildcards.pair}"
     conda: "../envs/general.yaml"
     log: "logs/{pair}.{status}.{num}.phylosor_newnull.txt"
