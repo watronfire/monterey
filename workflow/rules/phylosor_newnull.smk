@@ -2,7 +2,6 @@ rule prune_tree_to_pair:
     message: "Prune tree to only sequences from pair: {wildcards.pair}"
     conda: "../envs/general.yaml"
     log: "logs/{pair}.pruning.txt"
-    group: "pair-split"
     input:
         tree = config["input_locations"]["tree"],
         metadata = config["input_locations"]["metadata"]
@@ -20,7 +19,6 @@ rule compute_phylosor:
     message: "Compute {wildcards.status} phylosor across time for pair: {wildcards.pair}"
     conda: "../envs/general.yaml"
     log: "logs/{pair}.{status}.{num}.phylosor_newnull.txt"
-    group: "pair-split"
     input:
         tree = rules.prune_tree_to_pair.output.pruned_tree,
         metadata = config["input_locations"]["metadata"]
