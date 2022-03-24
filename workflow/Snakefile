@@ -15,13 +15,13 @@ with open( "resources/pairs.txt", "r" ) as pair_file:
 
 rule all:
     input:
-        nulls = expand( "results/trees/null_{num}.tree", num=range(1,11) ),
-        pruned_null_trees = expand( "results/trees/{pair}/{pair}.null.{num}.tree", pair=PAIRS, num=range(1,11) ),
-        pruned_actual_trees= expand( "results/trees/{pair}/{pair}.actual.{num}.tree", pair=PAIRS, num=[1] ),
-        results_nulls = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
-        results_actual = expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ),
-        results_combined = "results/output/phylosor_results.csv",
-        js_results = expand( "results/js/{pair}.js.csv", pair=JS_PAIRS )
+        #nulls = expand( "results/trees/null_{num}.tree", num=range(1,11) ),
+        #pruned_null_trees = expand( "results/trees/{pair}/{pair}.null.{num}.tree", pair=PAIRS, num=range(1,11) ),
+        #pruned_actual_trees= expand( "results/trees/{pair}/{pair}.actual.{num}.tree", pair=PAIRS, num=[1] ),
+        #results_nulls = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
+        results_actual = expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=range(1,11) ),
+        #results_combined = "results/output/phylosor_results.csv",
+        #js_results = expand( "results/js/{pair}.js.csv", pair=JS_PAIRS )
 # Include support functions for pipeline
 include: "rules/support.smk"
 

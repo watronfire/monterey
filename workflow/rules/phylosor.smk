@@ -33,16 +33,18 @@ rule prune_tree_to_pair:
     script: "../scripts/prune_to_pair.py"
 
 rule compute_phylosor:
-    message: "Compute phylosor across time for pair: {wildcards.pair}"
+    message: "Compute phylosor across time for pair: {wildcards.pair} {params.shuffle}"
     conda: "../envs/general.yaml"
     log: "logs/{pair}.{status}.{num}.phylosor.txt"
     group: "pair-split"
     input:
-        tree = rules.prune_tree_to_pair.output.pruned_tree,
+        #tree = rules.prune_tree_to_pair.output.pruned_tree,
+        tree = "results/tree/{pair}/{pair}.{status}.1.tree",
         metadata = config["input_locations"]["metadata"]
     params:
         pair_list = lambda wildcards: PAIRS[wildcards.pair],
-        window_size = config["compute_phylosor"]["window_size"]
+        window_size = config["compute_phylosor"]["window_size"],
+        shuffle = lambda wildcards: int( wildcards.num ) > 1
     output:
         results = "results/phylosor/{pair}/{pair}.{status}.{num}.csv"
     script: "../scripts/phylosor_table.py"
