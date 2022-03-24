@@ -69,20 +69,40 @@ def generate_date_seq( metadata, query, verbose=True ):
     max_date = metadata.loc[query, "date_collected"].max()
     return pd.date_range( start=min_date, end=max_date )
 
+def add_week_to_metadata( metadata, date_column, week_column ):
+    from epiweeks import Week
+    return_md = metadata.copy()
+    return_md[week_column] = return_md[date_column].apply( lambda x: Week.fromdate( x ).startdate() )
+    return return_md
 
-def shuffle_location( metadata, location, verbose=True ):
+
+def shuffle_within_location( metadata, location, verbose=True ):
     if verbose:
         print( f"Shuffling tips from {location} for inter-location analysis...", end="" )
     start_time = time.time()
-    return_md = metadata.copy()
+    return_md = add_week_to_metadata( metadata, "date_collected", "week" )
 
-    from epiweeks import Week
     from numpy.random import choice
-    return_md["week"] = return_md["date_collected"].apply( lambda x: Week.fromdate( x ).startdate() )
     return_md.loc[return_md["site"]==location,"site_shuffled"] = return_md.loc[return_md["site"]==location].groupby( "week" )["site"].transform( lambda x: choice( ["A", "B"], len( x ) ) )
     if verbose:
         print( f"Done in {time.time() - start_time:.1f} seconds" )
     return return_md 
+
+
+def shuffle_locations( metadata, verbose=True ):
+    def shuffle_columns( entry, column ):
+        entry["shuffled"] = entry[column].sample( frac=1, replace=False ).to_list()
+        return entry
+    if verbose:
+        print( f"Shuffling locations within tree...", end="" )
+
+    start_time = time.time()
+    return_md = add_week_to_metadata( metadata, "date_collected", "week" )
+    md_shuffled = return_md.groupby( "week" ).apply( shuffle_columns, column="site" )
+
+    assert md_shuffled.shape[0] == md.shape[0], f"Shuffled dataframe doesn't have the same number of rows (shuffled: {md_shuffled.shape[0]} vs. original: {md.shape[0]})"
+    assert not md_shuffled["shuffled"].equals( md_shuffled["site"] ), f"Shuffled column is identical to original column"
+    return md_shuffled
 
 
 def phylosor_table( tree, metadata, queryA, nameA, queryB, nameB, window, verbose=True ):
@@ -128,9 +148,13 @@ if __name__ == "__main__":
     name_A = pair_list[0]
     name_B = pair_list[1]
     if pair_list[0] == pair_list[1]:
-        md = shuffle_location( md, pair_list[0] )
+        md = shuffle_within_location( md, pair_list[0] )
         query_A = md["site_shuffled"] == "A"
         query_B = md["site_shuffled"] == "B"
+    elif snakemake.params.shuffle:
+        md = shuffle_locations( md )
+        query_A = md["shuffled"]==name_A
+        query_B = md["shuffled"]==name_B
     else:
         query_A = md["site"]== name_A
         query_B = md["site"]== name_B

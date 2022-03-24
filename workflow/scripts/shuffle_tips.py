@@ -16,7 +16,7 @@ def shuffle_tips( tree, metadata, id_col, date_col, map_file, output_loc ):
     md["week"] = md[date_col].apply( lambda x: Week.fromdate(x).startdate() )
 
     def shuffle_columns( entry, column ):
-        entry["shuffled"] = entry[column].sample( frac=1 ).to_list()
+        entry["shuffled"] = entry[column].sample( frac=1, replace=False ).to_list()
         return entry
 
     md_shuffled = md.groupby( "week" ).apply( shuffle_columns, column=id_col )
