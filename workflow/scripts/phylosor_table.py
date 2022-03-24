@@ -102,6 +102,9 @@ def shuffle_locations( metadata, verbose=True ):
 
     assert md_shuffled.shape[0] == md.shape[0], f"Shuffled dataframe doesn't have the same number of rows (shuffled: {md_shuffled.shape[0]} vs. original: {md.shape[0]})"
     assert not md_shuffled["shuffled"].equals( md_shuffled["site"] ), f"Shuffled column is identical to original column"
+    assert all(md_shuffled.pivot_table( index="week", columns=["shuffled"], values="accession_id", aggfunc="count",fill_value=0 ) \
+               == md_shuffled.pivot_table( index="week", columns=["site"], values="accession_id", aggfunc="count", fill_value=0 ) ),\
+    "shuffle column doesn't contain same number of locations"
     return md_shuffled
 
 
@@ -144,14 +147,13 @@ if __name__ == "__main__":
 
     pair_list = snakemake.params.pair_list
 
-    # TODO: this will be the place to generate between or within-location queries
     name_A = pair_list[0]
     name_B = pair_list[1]
     if pair_list[0] == pair_list[1]:
         md = shuffle_within_location( md, pair_list[0] )
         query_A = md["site_shuffled"] == "A"
         query_B = md["site_shuffled"] == "B"
-    elif snakemake.params.shuffle:
+    elif snakemake.params.shuffle:          #NotImplemented, yet
         md = shuffle_locations( md )
         query_A = md["shuffled"]==name_A
         query_B = md["shuffled"]==name_B
