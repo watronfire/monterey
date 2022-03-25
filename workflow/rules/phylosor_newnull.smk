@@ -20,7 +20,7 @@ rule compute_phylosor_newnull:
     conda: "../envs/general.yaml"
     log: "logs/{pair}.{status}.{num}.phylosor_newnull.txt"
     input:
-        tree = rules.prune_tree_to_pair.output.pruned_tree,
+        tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
         metadata = config["input_locations"]["metadata"]
     params:
         pair_list = lambda wildcards: PAIRS[wildcards.pair],
