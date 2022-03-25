@@ -21,9 +21,10 @@ rule all:
         #results_nulls = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
         #results_actual = expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=range(1,11) ),
         #results_combined = "results/output/phylosor_results.csv",
-        #js_results = expand( "results/js/{pair}.js.csv", pair=JS_PAIRS )
+        js_results = expand( "results/js/{pair}.js.csv", pair=JS_PAIRS ),
         results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
-        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] )
+        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ),
+        results_combined = "results/output/phylosor_newnull_results.csv"
 
 # Include support functions for pipeline
 include: "rules/support.smk"
