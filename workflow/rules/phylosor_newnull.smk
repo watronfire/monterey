@@ -30,3 +30,13 @@ rule compute_phylosor_newnull:
         results = "results/phylosor_newnull/{pair}/{pair}.{status}.{num}.csv"
     script: "../scripts/phylosor_table.py"
 
+rule combine_results_newnull:
+    message: "Combine phylosor results for all comparisons"
+    conda: "../envs/general.yaml"
+    log: "logs/combine_results.txt"
+    input:
+        results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv",pair=PAIRS,num=range( 1,11 ) ),
+        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv",pair=PAIRS,num=[1] )
+    output:
+        results = "results/output/phylosor_newnull_results.csv"
+    script: "../scripts/combine_results.py"
