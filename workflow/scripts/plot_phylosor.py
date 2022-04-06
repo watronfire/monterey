@@ -53,7 +53,7 @@ def timeseries_formatting( ax, spines=["bottom"], which="y", title=None, ylabel=
         ax.set_ylim( ylims )
 
 def plot_sampling( axis, df, colors=["#E69F00", "#56B4E9"], order=None, fixed=False ):
-    plot_df = df.pivot_table( index="epiweek", columns="site", values="pangolin_lineage", aggfunc="count" ).fillna(0.0)
+    plot_df = df.pivot_table( index="epiweek", columns="site", values="strain", aggfunc="count" ).fillna(0.0)
 
     if order:
         plots = [plot_df[i] for i in order]
@@ -118,7 +118,6 @@ def plot_phylosor( axis, df, focus, color, missing=True, normalized=False ):
 
     axis.plot( "date", pvalue, color=color, data=plot_df, zorder=10 )
     axis.fill_between( x="date", y1="corrected_upper", y2="corrected_upper", color=COLOR, alpha=0.1, linewidth=0, zorder=9 )
-
 
 def plot_phylosors( axis, df, focuses, colors, missing=True, normalized=False, leg_position="best" ):
     legend = list()
