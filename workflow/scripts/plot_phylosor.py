@@ -181,7 +181,7 @@ def plot_phylosor_all( md_loc, results_loc, pair_list, output ):
     plt.savefig( output )
 
 if __name__ == "__main__":
-    plot_phylosors_all(
+    plot_phylosor_all(
         snakemake.input.metadata,
         snakemake.input.results,
         snakemake.params.pair_list,
