@@ -43,7 +43,7 @@ rule combine_results_newnull:
 
 rule plot_results_newnull:
     message: "Plot phylosor metric for pair: {wildcards.pair}"
-    conda: "../env/general.yaml"
+    conda: "../envs/general.yaml"
     log: "logs/{pair}.plotting.log"
     input:
         metadata = config["input_locations"]["metadata"],
