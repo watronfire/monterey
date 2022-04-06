@@ -31,8 +31,8 @@ rule all:
 include: "rules/support.smk"
 
 # Include phylosor rules for pipeline
-#include: "rules/phylosor.smk"
-include: "rules/phylosor_newnull.smk"
+include: "rules/phylosor.smk"
+#include: "rules/phylosor_newnull.smk"
 
 # Include jensen-shannon rules
 include: "rules/jensenshannon.smk"

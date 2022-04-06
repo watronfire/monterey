@@ -57,3 +57,17 @@ rule combine_results:
     output:
         results = "results/output/phylosor_results.csv"
     script: "../scripts/combine_results.py"
+
+rule plot_results:
+    message: "Plot phylosor metric for pair: {wildcards.pair}"
+    conda: "../envs/general.yaml"
+    log: "logs/{pair}.plotting.log"
+    input:
+        metadata = config["input_locations"]["metadata"],
+        results = rules.combine_results.output.results
+    params:
+        pair_list = lambda wildcards: PAIRS[wildcards.pair]
+    output:
+        plot = "results/phylosor_oldnull_plot/{pair}.phylosor.pdf"
+    script:
+        "../scripts/plot_phylosor.py"
