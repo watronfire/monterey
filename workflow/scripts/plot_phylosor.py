@@ -165,7 +165,10 @@ def plot_phylosor_all( md_loc, results_loc, pair_list, output ):
     results, results_corr = load_results( results_loc, pair_list )
 
     fig, ax = plt.subplots( dpi=200, figsize=(10,10), nrows=3, sharex=True )
-    plot_sampling( ax[0], md, order=pair_list )
+    if pair_list[0] == pair_list[1]:
+        plot_within_sampling( ax[0], md, pair_list[0] )
+    else:    
+        plot_sampling( ax[0], md, order=pair_list )
     plot_phylosor_nulls( ax[1], results, pair_list, COLOR )
     timeseries_formatting( ax[1], ylabel="Proportion of\nbranch length shared", ylims=[0,1] )
     plot_phylosor( ax[2], results_corr, pair_list, COLOR, normalized="sub" )
