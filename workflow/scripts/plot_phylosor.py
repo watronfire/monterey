@@ -24,7 +24,7 @@ mpl.rcParams['axes.labelcolor'] = COLOR
 mpl.rcParams['xtick.color'] = COLOR
 mpl.rcParams['ytick.color'] = COLOR
 
-def timeseries_formatting( ax, spines=["bottom"], which="y", title=None, ylabel=None, xlabel=None, xsize=12, ysize=12, xlims=None, ylims=None ):
+def timeseries_formatting( ax, spines=["bottom"], which="y", title=None, ylabel=None, xlabel=None, xsize=10, ysize=10, xlims=None, ylims=None ):
     # Properly label timeseries
     ax.xaxis.set_minor_locator( mdates.MonthLocator() )
     ax.xaxis.set_minor_formatter( mdates.DateFormatter( '%b' ) )
@@ -117,14 +117,7 @@ def plot_phylosor( axis, df, focus, color, missing=True, normalized=False ):
         plot_df.loc[plot_df["value"]==0,"value"] = np.nan
 
     axis.plot( "date", pvalue, color=color, data=plot_df, zorder=10 )
-    axis.fill_between( x="date", y1="corrected_upper", y2="corrected_upper", color=COLOR, alpha=0.1, linewidth=0, zorder=9 )
-
-def plot_phylosors( axis, df, focuses, colors, missing=True, normalized=False, leg_position="best" ):
-    legend = list()
-    for i, j in zip( focuses, colors ):
-        plot_phylosor( axis, df, i, j, missing=missing, normalized=normalized )
-        legend.append( Line2D([0], [0], linestyle='none', marker='o', color=j, label=" – ".join( i ), markersize=12 ) )
-    axis.legend( handletextpad=0.1, handles=legend, frameon=False, fontsize=12, loc=leg_position )
+    axis.fill_between( x="date", y1="corrected_upper", y2="corrected_lower", data=plot_df, color="black", alpha=0.14, linewidth=0, zorder=9 )
 
 def format_for_focus( input_df, focus ):
     df = input_df.copy()
@@ -156,11 +149,12 @@ def get_corrected_df( entry ):
     a["corrected_lower"] = a["null_upper"] - a["value"]
     return a
 
-def load_results( results_loc ) :
+def load_results( results_loc, pair ) :
     return_df = pd.read_csv( results_loc, parse_dates=["date"] )
     return_df["kind"] = return_df["kind"].fillna( "null" )
     return_df["kind"] = return_df["kind"] + return_df["num"].astype( str )
     return_df = return_df.drop( columns=["num"] )
+    return_df = return_df.loc[(return_df["siteA"]==pair[0])&(return_df["siteB"]==pair[1])]
 
     df_corrected = get_corrected_df( return_df )
 
@@ -168,14 +162,15 @@ def load_results( results_loc ) :
 
 def plot_phylosor_all( md_loc, results_loc, pair_list, output ):
     md = load_metadata( md_loc, pair_list )
-    results, results_corr = load_results( results_loc )
+    results, results_corr = load_results( results_loc, pair_list )
 
     fig, ax = plt.subplots( dpi=200, figsize=(10,10), nrows=3, sharex=True )
     plot_sampling( ax[0], md, order=pair_list )
     plot_phylosor_nulls( ax[1], results, pair_list, COLOR )
     timeseries_formatting( ax[1], ylabel="Proportion of\nbranch length shared", ylims=[0,1] )
     plot_phylosor( ax[2], results_corr, pair_list, COLOR, normalized="sub" )
-    timeseries_formatting( ax[1], ylabel="Difference to mixed-model", ylims=[0,1] )
+    timeseries_formatting( ax[2], ylabel="Difference to mixed-model", ylims=[0,1] )
+    plt.suptitle( " <-> ".join( pair_list ), fontsize=12 )
     plt.tight_layout()
     plt.savefig( output )
 
