@@ -40,3 +40,17 @@ rule combine_results_newnull:
     output:
         results = "results/output/phylosor_newnull_results.csv"
     script: "../scripts/combine_results.py"
+
+rule plot_results_newnull:
+    message: "Plot phylosor metric for pair: {wildcards.pair}"
+    conda: "../env/general.yaml"
+    log: "logs/{pair}.plotting.log"
+    input:
+        metadata = config["input_locations"]["metadata"],
+        results = rules.combine_results_newnull.output.results
+    params:
+        pair_list = lambda wildcards: PAIRS[wildcards.pair]
+    output:
+        plot = "results/phylosor_plot/{pair}.phylosor.pdf"
+    script:
+        "../scripts/plot_phylosor.py"
