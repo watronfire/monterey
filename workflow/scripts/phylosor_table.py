@@ -1,3 +1,5 @@
+import argparse
+
 from dendropy import Tree
 import pandas as pd
 import time
@@ -136,16 +138,29 @@ def phylosor_table( tree, metadata, queryA, nameA, queryB, nameB, window, verbos
 
     output_df = pd.DataFrame( output_df, columns=["blA", "blB", "blBoth", "date", "siteA", "countA", "siteB", "countB" ] )
     output_df["value"] = output_df["blBoth"] / ( 0.5 * (output_df["blA"] + output_df["blB"] ) )
+    output_df["value_turn"] = output_df["blBoth"] / output_df[["blA","blB"]].min(axis=1)
 
     return output_df
 
 if __name__ == "__main__":
-    t = load_tree( tree_loc=snakemake.input.tree )
+
+    # Command-line argument parsing
+    parser = argparse.ArgumentParser( description="Calculates phylosor metric between location pair" )
+    parser.add_argument( "--tree", type=str, help="input tree", required=True )
+    parser.add_argument( "--metadata", type=str, help="metadata for tips of tree", required=True )
+    parser.add_argument( "--pair-list", nargs="+", help="Site pair to compare", required=True )
+    parser.add_argument( "--window-size", type=int, default=30, help="Window to calculate phylosor over" )
+    parser.add_argument( "--shuffle", action='store_true', help="whether or not to calculate the null model" )
+    parser.add_argument( "--output", type=str, help="Location to save output", required=True )
+    args = parser.parse_args()
+    print( args )
+
+    t = load_tree( tree_loc=args.tree )
     tl = [i.label for i in t.taxon_namespace]
 
-    md = load_metadata( md_loc=snakemake.input.metadata, tip_labels=tl )
+    md = load_metadata( md_loc=args.metadata, tip_labels=tl )
 
-    pair_list = snakemake.params.pair_list
+    pair_list = args.pair_list
 
     name_A = pair_list[0]
     name_B = pair_list[1]
@@ -153,7 +168,7 @@ if __name__ == "__main__":
         md = shuffle_within_location( md, pair_list[0] )
         query_A = md["site_shuffled"] == "A"
         query_B = md["site_shuffled"] == "B"
-    elif snakemake.params.shuffle:          #NotImplemented, yet
+    elif args.shuffle:
         md = shuffle_locations( md )
         query_A = md["shuffled"]==name_A
         query_B = md["shuffled"]==name_B
@@ -167,6 +182,6 @@ if __name__ == "__main__":
                              nameA=name_A,
                              queryB=query_B,
                              nameB=name_B,
-                             window=int( snakemake.params.window_size ) )
+                             window=int( args.window_size ) )
 
-    output.to_csv( snakemake.output.results )
+    output.to_csv( args.output )

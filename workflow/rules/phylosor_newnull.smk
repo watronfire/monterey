@@ -25,10 +25,19 @@ rule compute_phylosor_newnull:
     params:
         pair_list = lambda wildcards: PAIRS[wildcards.pair],
         window_size = config["compute_phylosor"]["window_size"],
-        shuffle = lambda wildcards: wildcards.status == "null"
+        shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
     output:
         results = "results/phylosor_newnull/{pair}/{pair}.{status}.{num}.csv"
-    script: "../scripts/phylosor_table.py"
+    shell:
+        """
+        python ../scripts/phylosor_table.py \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --pair-list {params.pair_list} \
+            --window-size {params.window_size} \
+            {params.shuffle} \
+            --output {output.results} \
+        """
 
 rule combine_results_newnull:
     message: "Combine phylosor results for all comparisons"
