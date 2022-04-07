@@ -5,7 +5,7 @@ def combine_results( results, output ):
     line_count = 0
     output_df = []
     for result in results:
-        result_df = pd.read_csv( result, parse_dates=["date"], index_col=0 )
+        result_df = pd.read_csv( result, parse_dates=["date"] )
 
         name = os.path.splitext( os.path.split( result )[1] )[0]
         name_split = name.split( "." )

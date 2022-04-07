@@ -153,7 +153,6 @@ if __name__ == "__main__":
     parser.add_argument( "--shuffle", action='store_true', help="whether or not to calculate the null model" )
     parser.add_argument( "--output", type=str, help="Location to save output", required=True )
     args = parser.parse_args()
-    print( args )
 
     t = load_tree( tree_loc=args.tree )
     tl = [i.label for i in t.taxon_namespace]
@@ -184,4 +183,4 @@ if __name__ == "__main__":
                              nameB=name_B,
                              window=int( args.window_size ) )
 
-    output.to_csv( args.output )
+    output.to_csv( args.output, index=False )

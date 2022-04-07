@@ -25,14 +25,14 @@ rule all:
         results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
         results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ),
         results_combined = "results/output/phylosor_newnull_results.csv",
-        phylosor_plot = expand( "results/phylosor_oldnull_plot/{pair}.phylosor.pdf", pair=PAIRS )
+        phylosor_plot = expand( "results/phylosor_plot/{pair}.phylosor.pdf", pair=PAIRS )
 
 # Include support functions for pipeline
 include: "rules/support.smk"
 
 # Include phylosor rules for pipeline
-include: "rules/phylosor.smk"
-#include: "rules/phylosor_newnull.smk"
+#include: "rules/phylosor.smk"
+include: "rules/phylosor_newnull.smk"
 
 # Include jensen-shannon rules
 include: "rules/jensenshannon.smk"

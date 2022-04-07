@@ -30,7 +30,7 @@ rule compute_phylosor_newnull:
         results = "results/phylosor_newnull/{pair}/{pair}.{status}.{num}.csv"
     shell:
         """
-        python ../scripts/phylosor_table.py \
+        python workflow/scripts/phylosor_table.py \
             --tree {input.tree} \
             --metadata {input.metadata} \
             --pair-list {params.pair_list} \
