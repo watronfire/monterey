@@ -6,4 +6,4 @@
 #SBATCH --output=/gpfs/home/natem/logs/phylosor.txt
 
 module load python/3.8.3 &&
-snakemake -k -j 50 --use-conda --cluster-config config/cluster.json --cluster "sbatch --time={cluster.walltime} --mem={cluster.mem} -c {cluster.n} --partition={cluster.queue} --output={cluster.logfile}"
+snakemake -k -j 50 --use-conda --cluster-config config/cluster.json --cluster "sbatch --time={cluster.walltime} --mem={cluster.mem} -c {cluster.n} --partition={cluster.queue} --output={cluster.logfile}" --allowed-rules plot_results
