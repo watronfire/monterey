@@ -33,7 +33,7 @@ rule compute_phylosor_newnull:
         python workflow/scripts/phylosor_table.py \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --pair-list {params.pair_list} \
+            --pair-list {params.pair_list:q} \
             --window-size {params.window_size} \
             {params.shuffle} \
             --output {output.results} \

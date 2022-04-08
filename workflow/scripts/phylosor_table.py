@@ -111,7 +111,7 @@ def shuffle_locations( metadata, verbose=True ):
 
 
 def phylosor_table( tree, metadata, queryA, nameA, queryB, nameB, window, verbose=True ):
-
+    
     date_seq = generate_date_seq( metadata, queryA|queryB )
     if verbose:
         print( f"Performing {len( date_seq[:-window] )} comparisons with window length {window}" )
