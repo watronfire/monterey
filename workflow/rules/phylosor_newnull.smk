@@ -63,7 +63,7 @@ rule compute_hill:
             --output {output.results} \
         """
 
-rule combine_results_newnull:
+rule combine_hill:
     message: "Combine hill results for all comparisons"
     conda: "../envs/general.yaml"
     log: "logs/combine_results.txt"
