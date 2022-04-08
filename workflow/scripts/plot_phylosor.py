@@ -86,12 +86,12 @@ def plot_within_sampling( axis, df, name, color="#56B4E9",  ):
     timeseries_formatting( axis, spines=["bottom"] )
     axis.set_ylabel( name )
 
-def plot_phylosor_nulls( axis, df, focus, color, missing=True, title=False ):
+def plot_phylosor_nulls( axis, df, focus, color, col="value", missing=True, title=False ):
     plot_df = format_for_focus( df, focus[0] )
     plot_df = plot_df.loc[plot_df["from"]==focus[1]].dropna()
 
     for i in sorted( plot_df["kind"].unique(), reverse=True ):
-        axis.plot( "date", "value", color="#DBDBDB" if i.startswith( "null" ) else color, data=plot_df.loc[plot_df["kind"]==i] )
+        axis.plot( "date", col, color="#DBDBDB" if i.startswith( "null" ) else color, data=plot_df.loc[plot_df["kind"]==i] )
 
     legend = [Line2D([0], [0], linestyle='none', marker='o', color=color, label="True locations", markersize=12 ),
               Line2D([0], [0], linestyle='none', marker='o', color="#DBDBDB", label="Shuffled locations", markersize=12 )]
@@ -134,19 +134,19 @@ def load_metadata( md_loc, pair ) :
     return_df["epiweek"] = return_df["date_collected"].apply( lambda x: Week.fromdate( x ).startdate() )
     return return_df
 
-def get_corrected_df( entry ):
+def get_corrected_df( entry, col="value" ):
     a = entry.loc[entry["kind"].str.startswith("actual")]
     n = entry.loc[entry["kind"].str.startswith("null")]
-    n = n.groupby( ["siteA", "siteB", "date"] )["value"].agg(
+    n = n.groupby( ["siteA", "siteB", "date"] )[col].agg(
         null_upper=lambda x: x.quantile( 0.975 ),
         null_lower=lambda x: x.quantile( 0.025 ),
         null_mean="mean",
         null_std="std",
         null_count="count" )
     a = a.merge( n, left_on=["siteA", "siteB", "date"], right_index=True, validate="1:1" )
-    a["corrected_sub"] = a["null_mean"] - a["value"]
-    a["corrected_upper"] = a["null_lower"] - a["value"]
-    a["corrected_lower"] = a["null_upper"] - a["value"]
+    a["corrected_sub"] = a["null_mean"] - a[col]
+    a["corrected_upper"] = a["null_lower"] - a[col]
+    a["corrected_lower"] = a["null_upper"] - a[col]
     return a
 
 def load_results( results_loc, pair ) :
@@ -164,7 +164,7 @@ def plot_phylosor_all( md_loc, results_loc, pair_list, output ):
     md = load_metadata( md_loc, pair_list )
     results, results_corr = load_results( results_loc, pair_list )
 
-    fig, ax = plt.subplots( dpi=200, figsize=(10,10), nrows=3, sharex=True )
+    fig, ax = plt.subplots( dpi=200, figsize=(10,13), nrows=4, sharex=True )
     if pair_list[0] == pair_list[1]:
         plot_within_sampling( ax[0], md, pair_list[0] )
     else:    
@@ -173,6 +173,8 @@ def plot_phylosor_all( md_loc, results_loc, pair_list, output ):
     timeseries_formatting( ax[1], ylabel="Proportion of\nbranch length shared", ylims=[0,1] )
     plot_phylosor( ax[2], results_corr, pair_list, COLOR, normalized="sub" )
     timeseries_formatting( ax[2], ylabel="Difference to mixed-model", ylims=[0,1] )
+    plot_phylosor_nulls( ax[3], results, pair_list, COLOR )
+    timeseries_formatting( ax[3], ylabel="$PhyloSor_{Turn}$", ylims=[0,1] )
     plt.suptitle( " <-> ".join( pair_list ), fontsize=12 )
     plt.tight_layout()
     plt.savefig( output )
