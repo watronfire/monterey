@@ -39,6 +39,41 @@ rule compute_phylosor_newnull:
             --output {output.results} \
         """
 
+rule compute_hill:
+    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
+    conda: "../envs/general.yaml"
+    log: "logs/{pair}.{status}.{num}.hill.txt"
+    input:
+        tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
+        metadata = config["input_locations"]["metadata"]
+    params:
+        pair_list = lambda wildcards: PAIRS[wildcards.pair],
+        window_size = config["compute_phylosor"]["window_size"],
+        shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
+    output:
+        results = "results/hill/{pair}/{pair}.{status}.{num}.csv"
+    shell:
+        """
+        Rscript ../script/hill_monthly.R \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --pair-list {params.pair_list} \
+            --window-size {params.window_size} \
+            {params.shuffle} \
+            --output {output.results} \
+        """
+
+rule combine_results_newnull:
+    message: "Combine hill results for all comparisons"
+    conda: "../envs/general.yaml"
+    log: "logs/combine_results.txt"
+    input:
+        results_nulls = expand( "results/hill/{pair}/{pair}.null.{num}.csv",pair=PAIRS,num=range( 1,11 ) ),
+        results_actual = expand( "results/hill/{pair}/{pair}.actual.{num}.csv",pair=PAIRS,num=[1] )
+    output:
+        results = "results/output/hill_results.csv"
+    script: "../scripts/combine_results.py"
+
 rule combine_results_newnull:
     message: "Combine phylosor results for all comparisons"
     conda: "../envs/general.yaml"

@@ -48,7 +48,7 @@ rownames( comm ) <- locations
 print( comm )
 
 ptm <- proc.time()
-res <- phylosor( comm, t )
+res <- library( hillR )
 print( res )
 res_df <- toDataFrame( res )
 counts <- data.frame( rowSums( comm ) )
