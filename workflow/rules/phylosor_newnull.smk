@@ -47,17 +47,19 @@ rule compute_hill:
         tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
         metadata = config["input_locations"]["metadata"]
     params:
-        pair_list = lambda wildcards: PAIRS[wildcards.pair],
+        pair1 = lambda wildcards: PAIRS[wildcards.pair][0],
+        pair2 = lambda wildcards: PAIRS[wildcards.pair][1],
         window_size = config["compute_phylosor"]["window_size"],
         shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
     output:
         results = "results/hill/{pair}/{pair}.{status}.{num}.csv"
     shell:
         """
-        Rscript ../script/hill_monthly.R \
+        Rscript workflow/scripts/hill_monthly.R \
             --tree {input.tree} \
             --metadata {input.metadata} \
-            --pair-list {params.pair_list} \
+            --pair1 {params.pair1:q} \
+            --pair2 {params.pair2:q} \
             --window-size {params.window_size} \
             {params.shuffle} \
             --output {output.results} \

@@ -3,6 +3,7 @@ library( phytools )
 library( hillR )
 library( dplyr )
 library( R.utils )
+library( lubridate )
 
 phylosorTable <- function( tree, metadata, locations, window ) {
     date_seq <- seq( min( metadata$date_collected ), max( metadata$date_collected ), by="months" )
@@ -14,7 +15,7 @@ phylosorTable <- function( tree, metadata, locations, window ) {
         for( j in 1:length( locations ) ) {
             comm[j,] <- tree$tip.label %in% (md %>%
                                             filter( (site == locations[[j]]) & between(date_collected, date_seq[i-1], date_seq[i]) ) %>%
-                                            pull( strain ) )
+                                            pull( accession_id ) )
         }
         if( max( comm ) == 0 ){
             printf( "%s being skipped. No sequences\n", date_seq[i] )
@@ -46,6 +47,8 @@ args <- commandArgs(asValue=TRUE, excludeReserved=TRUE, defaults=list( shuffle=F
 
 print( args )
 
+loc_pair <- c( args$pair1, args$pair2 )
+
 t <- read.tree( args$tree ) %>% root( outgroup = "EPI_ISL_402125", resolve.root = TRUE )
 # hillR throws a fit if there are some edgelengths that are NaN so I replace them with 0 because thats probably what they are.
 t$edge.length[is.na(t$edge.length)] <- 0
@@ -56,12 +59,12 @@ md <- read.csv( args$metadata ) %>%
   mutate( date_collected = as.Date( date_collected ) )
 md$week <- floor_date( md$date_collected, unit="week" )
 
-if ( args$randomize ) {
+if ( args$shuffle ) {
   md <- md %>%
     group_by( week ) %>%
     mutate( site_original=site, site=sample( site ) ) %>%
     ungroup()
 }
 
-results <- phylosorTable( t, md, args$pair_list, as.integer( args$window_size ) )
+results <- phylosorTable( t, md, loc_pair, as.integer( args$window_size ) )
 write.csv( results, args$output )

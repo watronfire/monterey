@@ -20,3 +20,4 @@ dependencies:
   - r-phytools
   - r-lubridate
   - r-r.utils
+  - r-hillr
