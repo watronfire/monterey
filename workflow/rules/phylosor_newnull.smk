@@ -70,8 +70,8 @@ rule combine_hill:
     conda: "../envs/general.yaml"
     log: "logs/combine_results.txt"
     input:
-        results_nulls = expand( "results/hill/{pair}/{pair}.null.{num}.csv",pair=PAIRS,num=range( 1,11 ) ),
-        results_actual = expand( "results/hill/{pair}/{pair}.actual.{num}.csv",pair=PAIRS,num=[1] )
+        results_nulls = expand( "results/hill/{pair}/{pair}.null.{num}.csv",pair=JS_PAIRS,num=range( 1,11 ) ),
+        results_actual = expand( "results/hill/{pair}/{pair}.actual.{num}.csv",pair=JS_PAIRS,num=[1] )
     output:
         results = "results/output/hill_results.csv"
     script: "../scripts/combine_results.py"
