@@ -173,7 +173,7 @@ def plot_phylosor_all( md_loc, results_loc, pair_list, output ):
     timeseries_formatting( ax[1], ylabel="Proportion of\nbranch length shared", ylims=[0,1] )
     plot_phylosor( ax[2], results_corr, pair_list, COLOR, normalized="sub" )
     timeseries_formatting( ax[2], ylabel="Difference to mixed-model", ylims=[0,1] )
-    plot_phylosor_nulls( ax[3], results, pair_list, COLOR )
+    plot_phylosor_nulls( ax[3], results, pair_list, COLOR, col="value_turn" )
     timeseries_formatting( ax[3], ylabel="$PhyloSor_{Turn}$", ylims=[0,1] )
     plt.suptitle( " <-> ".join( pair_list ), fontsize=12 )
     plt.tight_layout()

@@ -7,5 +7,10 @@
     "logfile" : "/gpfs/home/natem/logs/phylosor.txt",
     "n" : 1,
     "stdout" : "oe"
+  },
+  "compute_hill" : 
+  {
+    "walltime" : "48:00:00",
+    "mem" : "50gb"
   }
 }
