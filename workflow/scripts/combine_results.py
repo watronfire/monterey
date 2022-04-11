@@ -1,11 +1,12 @@
 import pandas as pd
 import os
+import argparse
 
 def combine_results( results, output ):
     line_count = 0
     output_df = []
     for result in results:
-        result_df = pd.read_csv( result, parse_dates=["date"] )
+        result_df = pd.read_csv( result )
 
         name = os.path.splitext( os.path.split( result )[1] )[0]
         name_split = name.split( "." )
@@ -25,6 +26,9 @@ def combine_results( results, output ):
     output_df.to_csv( output, index=False )
 
 if __name__ == "__main__":
-    results_list = snakemake.input.results_nulls
-    results_list.extend( snakemake.input.results_actual )
-    combine_results( results=results_list, output=snakemake.output.results )
+    parser = argparse.ArgumentParser( description="Combines all csvs specified in input while appending a column with a summary of the original file name" )
+    parser.add_argument( "input", nargs="+", help="input csvs seperated by whitespace" )
+    parser.add_argument( "output", help="location to save concatenated file" )
+    args = parser.parse_args()
+
+    combine_results( results=args.input, output=args.output )
