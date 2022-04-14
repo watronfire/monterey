@@ -32,31 +32,25 @@ def prune_to_pair( md_loc, id_col, date_col, location_col, tree_loc, pair, outpu
         run( f"gotree prune -r -i {tree_loc} -f {tf.name} -o {output_loc}", shell=True )
         print( f"Done in {time.time()-starting_time:.1f} seconds" )
 
-prune_to_pair( md_loc=snakemake.input.metadata,
-               id_col=snakemake.params.id_col,
-               date_col=snakemake.params.date_col,
-               location_col=snakemake.params.location_col,
-               tree_loc=snakemake.input.tree,
-               pair=snakemake.params.pair_list,
-               output_loc=snakemake.output.pruned_tree,
-               max_date=snakemake.params.date_max )
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser( description="" )
 
-#if __name__ == "__main__":
-#    parser = argparse.ArgumentParser( description="" )
-#
-#    # Initialize optional arguments
-#    parser.add_argument( "-m", "--metadata", help="ouput location" )
-#    parser.add_argument( "-t", "--tree", help="modifier" )
-#    parser.add_argument( "-i", "--id", help="modifier" )
-#    parser.add_argument( "-l", "--location", help="modifier" )
-#    parser.add_argument( "-p", "--pair", nargs=2, help="modifier" )
-#    parser.add_argument( "-o", "--output", help="modifier" )
-#
-#    args = parser.parse_args()
-#
-#    prune_to_pair( md_loc=args.metadata,
-#                   id_col=args.id,
-#                   location_col=args.location,
-#                   tree_loc=args.tree,
-#                   pair=args.pair,
-#                   output_loc=args.output)
+    # Initialize optional arguments
+    parser.add_argument( "-m", "--metadata", required=True )
+    parser.add_argument( "-t", "--tree", required=True )
+    parser.add_argument( "-i", "--id", required=True )
+    parser.add_argument( "-l", "--location-col", required=True )
+    parser.add_argument( "-p", "--pair", nargs=2, required=True )
+    parser.add_argument( "-o", "--output", required=True )
+    parser.add_argument( "--date-col", required=True )
+
+    args = parser.parse_args()
+
+    prune_to_pair( md_loc=args.metadata,
+                   id_col=args.id,
+                   date_col=args.date_col,
+                   location_col=args.location_col,
+                   tree_loc=args.tree,
+                   pair=args.pair,
+                   output_loc=args.output,
+                   max_date=args.max_date )

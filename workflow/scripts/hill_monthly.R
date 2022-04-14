@@ -6,15 +6,15 @@ library( R.utils )
 library( lubridate )
 
 phylosorTable <- function( tree, metadata, locations, window ) {
-    date_seq <- seq( min( metadata$date_collected ), max( metadata$date_collected ), by="months" )
+    date_seq <- sort( unique( metadata$month ) )
     count <- 0
-    for( i in 2:length( date_seq ) ) {
+    for( i in 1:length( date_seq ) ) {
         ptm <- proc.time()
         comm <- matrix( 0, nrow=length( locations ), ncol=length( tree$tip.label ) )
 
         for( j in 1:length( locations ) ) {
             comm[j,] <- tree$tip.label %in% (md %>%
-                                            filter( (site == locations[[j]]) & between(date_collected, date_seq[i-1], date_seq[i]) ) %>%
+                                            filter( (site == locations[[j]]) & (month==date_seq[i]) ) %>%
                                             pull( accession_id ) )
         }
         if( max( comm ) == 0 ){
@@ -58,6 +58,7 @@ md <- read.csv( args$metadata ) %>%
   filter( accession_id %in% t$tip.label ) %>%
   mutate( date_collected = as.Date( date_collected ) )
 md$week <- floor_date( md$date_collected, unit="week" )
+md$month <- floor_date( md$date_collected, unit="month" )
 
 if ( args$shuffle ) {
   md <- md %>%
