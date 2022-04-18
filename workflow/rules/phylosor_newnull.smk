@@ -13,16 +13,16 @@ rule prune_tree_to_pair_newnull:
         date_max = config["prune_tree_to_pair"]["date_max"]
     output:
         pruned_tree = "results/trees/{pair}/{pair}.tree"
-    script: "../scripts/prune_to_pair.py"
     shell:
         """
         python workflow/scripts/prune_to_pair.py \
             --tree {input.tree} \
             --metadata {input.metadata} \
+            --id {params.id_col} \
             --date-col {params.date_col} \
             --location-col {params.location_col} \
             --pair {params.pair_list:q} \
-            --date-max {params.date_max} \
+            --max-date {params.date_max} \
             --output {output.pruned_tree}
         """
 

@@ -43,6 +43,7 @@ if __name__ == "__main__":
     parser.add_argument( "-p", "--pair", nargs=2, required=True )
     parser.add_argument( "-o", "--output", required=True )
     parser.add_argument( "--date-col", required=True )
+    parser.add_argument( "--max-date" )
 
     args = parser.parse_args()
 

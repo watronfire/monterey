@@ -6,11 +6,12 @@ with open( "resources/pairs.txt", "r" ) as pair_file:
     PAIRS = dict()
     JS_PAIRS = dict()
     for line in pair_file:
-        pair = line.strip().split( "," )
-        short_name = line.strip().replace( ",", "-" ).replace( " ", "" )
-        PAIRS[short_name] = pair
-        if pair[0] != pair[1]:
-            JS_PAIRS[short_name] = pair
+        if not line.startswith( "#" ):
+            pair = line.strip().split( "," )
+            short_name = line.strip().replace( ",", "-" ).replace( " ", "" )
+            PAIRS[short_name] = pair
+            if pair[0] != pair[1]:
+                JS_PAIRS[short_name] = pair
 
 
 rule all:
@@ -25,8 +26,8 @@ rule all:
         results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range(1,11) ),
         results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ),
         results_combined = "results/output/phylosor_newnull_results.csv",
-        hill_combined = "results/output/hill_results.csv",
-        phylosor_plot = expand( "results/phylosor_plot/{pair}.phylosor.pdf", pair=PAIRS )
+        #hill_combined = "results/output/hill_results.csv",
+        #phylosor_plot = expand( "results/phylosor_plot/{pair}.phylosor.pdf", pair=PAIRS )
 
 # Include support functions for pipeline
 include: "rules/support.smk"
