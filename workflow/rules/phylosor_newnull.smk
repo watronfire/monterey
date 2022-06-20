@@ -52,7 +52,7 @@ rule rename_tree_to_accession:
         tree = "intermediates/rename_tree/cog_accession.tree"
     shell:
         """
-        cut -f1,2 -d, combined_md.csv | sed "s/,/\t/g" > {output.renames} &&
+        cut -f1,2 -d, {input.metadata} | sed "s/,/\t/g" > {output.renames} &&
         gotree rename --map {output.renames} < {input.tree} > {output.tree}
         """
 
