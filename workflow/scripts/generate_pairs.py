@@ -62,8 +62,7 @@ def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_l
     # Calculate sequences and completeness per site
     summary = calculate_summary( md )
 
-    if graph_loc:
-        prepare_graph( summary, min_sequences, min_completeness, graph_loc )
+    prepare_graph( summary, min_sequences, min_completeness, graph_loc )
 
     selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)&(summary.index != "San Diego County")].index
     with open( output_loc, "w" ) as output:
@@ -77,7 +76,7 @@ if __name__ == "__main__":
     parser.add_argument( "--min-sequences", help="Keep locations with at least this many sequences", required=True )
     parser.add_argument( "--min-completeness", help="Keep locations with sequences collected from at least this many epiweeks", required=True )
     parser.add_argument( "--output", help="location to save pairs", required=True )
-    parser.add_argument( "--graph", action="store_true", help="location to save diagnostic plot" )
+    parser.add_argument( "--graph", action="store_true", help="location to save diagnostic plot", required=True )
 
     args = parser.parse_args()
 
