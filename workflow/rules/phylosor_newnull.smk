@@ -74,7 +74,7 @@ rule generate_pairs:
     conda: "../envs/general.yaml"
     log: "logs/generate_pairs.txt"
     input:
-        metadata = rules.generate_metadata.output.combined_metadata
+        metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
         sequences = config["pairs"]["min_sequences"],
         completeness = config["pairs"]["min_completeness"]

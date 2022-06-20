@@ -16,7 +16,8 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        tree = "intermediates/rename_tree/cog_accession.tree"
+        tree = "intermediates/rename_tree/cog_accession.tree",
+        pairs = "intermediates/pairs/pairs.txt"
 
 # Include support functions for pipeline
 include: "rules/support.smk"
