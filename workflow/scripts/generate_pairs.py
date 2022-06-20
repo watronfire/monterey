@@ -28,8 +28,8 @@ def calculate_summary( md ):
     return_df.columns = ["sequences", "completeness"]
 
     return_df["country"] = 'USA'
-    return_df.loc[md.loc[md["country"] == "Canada","division"].unique(), "country"] = "Canada"
-    return_df.loc[md.loc[md["country"] == "Mexico","division"].unique(), "country"] = "Mexico"
+    return_df.loc[md.loc[md["country"] == "Canada","site"].unique(), "country"] = "Canada"
+    return_df.loc[md.loc[md["country"] == "Mexico","site"].unique(), "country"] = "Mexico"
     return return_df
 
 
