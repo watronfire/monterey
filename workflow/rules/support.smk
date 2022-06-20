@@ -4,8 +4,8 @@ def get_correct_tree( wildcards ):
     else:
         return f"results/trees/null_{wildcards.num}.tree"
 
-def get_pair_dict():
-    with checkpoints.generate_pairs.get().output[0].open() as pair_file:
+def get_pair_dict( wildcards ):
+    with checkpoints.generate_pairs.get( **wildcards ).output[0].open() as pair_file:
         PAIRS = dict()
         for line in pair_file:
             if not line.startswith( "#" ):
@@ -15,4 +15,4 @@ def get_pair_dict():
     return PAIRS
 
 def get_pair_list( wildcards ):
-    return get_pair_dict()[wildcards.pair]
+    return get_pair_dict(wildcards)[wildcards.pair]
