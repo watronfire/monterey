@@ -7,22 +7,10 @@ from matplotlib.ticker import PercentFormatter
 
 
 def load_metadata( md_loc ):
-    usecols = ["accession_id", "date_collected", "country", "division", "location",
-               "pangolin_lineage", "site"]
-    na_countries = ['Antigua and Barbuda', 'Bahamas', 'Barbados', 'Belize',
-                    'Bermuda', 'Canada', 'Costa Rica', 'Cuba',
-                    'Dominica', 'Dominican Republic', 'El Salvador', 'Guadeloupe', 'Grenada',
-                    'USA', 'Guatemala', 'Haiti', 'Honduras',
-                    'Jamaica', 'Mexico', 'Panama', 'Saint Barthélemy', 'Saint Kitts and Nevis',
-                    'Saint Lucia', 'Saint Martin', 'Saint Vincent and the Grenadines', 'Sint Maarten' ]
+    usecols = ["accession_id", "date_collected", "site"]
     md = pd.read_csv( md_loc, usecols=usecols, parse_dates=["date_collected"])
+    md = md.loc[~md["site"].isin( ["Other","None"] )]
     md["week"] = md["date_collected"].apply( lambda x: Week.fromdate( x ).startdate() )
-    md = md.loc[md["country"].isin(na_countries)]
-    md["site"] = md["country"]
-    md.loc[md["country"].isin( ["Canada", "Mexico"] ), "site"] = md["division"]
-    md.loc[md["country"] == "USA", "site"] = md["location"]
-    md.loc[md["division"].isin( ["Guam", "Puerto Rico", "Virgin Islands", "Northern Mariana Islands"] ), "site"] = md["division"]
-    md = md.loc[md["site"] != "None"]
     return md
 
 
@@ -31,7 +19,7 @@ def calculate_summary( md ):
     seqs = md["site"].value_counts()
 
     # fraction of sequences per week per site.
-    completeness = md.pivot_table( columns="site", index="week", values="region", aggfunc="count" )
+    completeness = md.pivot_table( columns="site", index="week", values="date_collected", aggfunc="count" )
     completeness = completeness.loc[completeness.index > pd.to_datetime( "2020-02-23" )]
     completeness = completeness.count() / completeness.shape[0]
 

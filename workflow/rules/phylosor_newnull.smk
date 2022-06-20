@@ -56,6 +56,19 @@ rule rename_tree_to_accession:
         gotree rename --map {output.renames} < {input.tree} > {output.tree}
         """
 
+rule collapse_location_in_metadata:
+    message: "Add column to metadata with most-relevant location data"
+    input:
+        metadata = rules.generate_metadata.output.combined_metadata
+    output:
+        collapsed_metadata = "intermediates/collapse_location/metadata.csv"
+    shell:
+        """
+        python workflow/scripts/collapse_location.py \
+            --input {input.metadata} \
+            --output {output.collapsed_metadata}
+        """
+
 rule generate_pairs:
     message: "Do a robust search through the metadata for all locations which have greater than {params.sequences} and greater than {params.completeness} epiweeks covered."
     conda: "../envs/general.yaml"
