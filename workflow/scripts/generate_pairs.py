@@ -9,6 +9,7 @@ from matplotlib.ticker import PercentFormatter
 def load_metadata( md_loc ):
     usecols = ["accession_id", "date_collected", "country", "division", "site"]
     md = pd.read_csv( md_loc, usecols=usecols, parse_dates=["date_collected"])
+    md = md.loc[~md["site"].isna()]
     md = md.loc[~md["site"].isin( ["Other","None"] )]
     md["week"] = md["date_collected"].apply( lambda x: Week.fromdate( x ).startdate() )
     return md
