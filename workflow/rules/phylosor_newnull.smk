@@ -25,6 +25,8 @@ rule metadata_prune:
         tree = "intermediates/metadata_prune/cog_md.tree",
     run:
         import numpy as np
+        import pandas as pd
+
         md = pd.read_csv( input.metadata, parse_dates=["date_collected"] )
 
         tree_tips = [i for i in shell( "gotree labels < {input.tree}", iterable=True )]
