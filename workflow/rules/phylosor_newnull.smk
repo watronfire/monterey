@@ -96,7 +96,7 @@ rule prune_tree_to_pair_newnull:
     conda: "../envs/general.yaml"
     log: "logs/{pair}.pruning.txt"
     input:
-        tree = rules.metadata_prune.output.tree,
+        tree = rules.rename_tree_to_accession.output.tree,
         metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
         pair_list = get_pair_list,
