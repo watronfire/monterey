@@ -23,5 +23,5 @@ def generate_phylosor_results( wildcards ):
     PAIRS = get_pair_dict( wildcards, checkpoints )
 
     results = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range( 1,11 ) )
-    results.extend( expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=get_pair_dict, num=[1] ) )
+    results.extend( expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ) )
     return results
