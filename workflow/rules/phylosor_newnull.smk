@@ -191,8 +191,7 @@ rule combine_results_newnull:
     conda: "../envs/general.yaml"
     log: "logs/combine_results.txt"
     input:
-        results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=get_pair_dict, num=range( 1,11 ) ),
-        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=get_pair_dict, num=[1] )
+        results = generate_phylosor_results
     output:
         results = "results/output/phylosor_newnull_results.csv"
     shell:
