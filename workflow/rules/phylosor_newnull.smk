@@ -99,7 +99,7 @@ rule prune_tree_to_pair_newnull:
         tree = rules.metadata_prune.output.tree,
         metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
-        pair_list = wildcards,
+        pair_list = get_pair_list,
         id_col = config["columns"]["id_col"],
         date_col = config["columns"]["date_col"],
         location_col = config["columns"]["location_col"],
