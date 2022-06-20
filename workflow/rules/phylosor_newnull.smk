@@ -99,7 +99,7 @@ rule prune_tree_to_pair_newnull:
         tree = rules.metadata_prune.output.tree,
         metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
-        pair_list = get_pair_list,
+        pair_list = lambda wildcards: get_pair_list( wildcards ),
         id_col = config["columns"]["id_col"],
         date_col = config["columns"]["date_col"],
         location_col = config["columns"]["location_col"],
@@ -191,8 +191,8 @@ rule combine_results_newnull:
     conda: "../envs/general.yaml"
     log: "logs/combine_results.txt"
     input:
-        results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=get_pair_dict.keys(), num=range( 1,11 ) ),
-        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=get_pair_dict.keys(), num=[1] )
+        results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=get_pair_dict, num=range( 1,11 ) ),
+        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=get_pair_dict, num=[1] )
     output:
         results = "results/output/phylosor_newnull_results.csv"
     shell:

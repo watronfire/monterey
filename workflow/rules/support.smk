@@ -12,6 +12,7 @@ def get_pair_dict():
                 pair = line.strip().split( "," )
                 short_name = line.strip().replace( ",", "-" ).replace( " ", "" )
                 PAIRS[short_name] = pair
+    return PAIRS
 
 def get_pair_list( wildcards ):
     return get_pair_dict()[wildcards.pair]
