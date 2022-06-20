@@ -69,7 +69,7 @@ rule collapse_location_in_metadata:
             --output {output.collapsed_metadata}
         """
 
-rule generate_pairs:
+checkpoint generate_pairs:
     message: "Do a robust search through the metadata for all locations which have greater than {params.sequences} and greater than {params.completeness} epiweeks covered."
     conda: "../envs/general.yaml"
     log: "logs/generate_pairs.txt"
@@ -97,9 +97,9 @@ rule prune_tree_to_pair_newnull:
     log: "logs/{pair}.pruning.txt"
     input:
         tree = rules.metadata_prune.output.tree,
-        metadata = rules.generate_metadata.output.combined_metadata
+        metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
-        pair_list = lambda wildcards: PAIRS[wildcards.pair],
+        pair_list = get_pair_list,
         id_col = config["columns"]["id_col"],
         date_col = config["columns"]["date_col"],
         location_col = config["columns"]["location_col"],
@@ -127,7 +127,7 @@ rule compute_phylosor_newnull:
         tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
         metadata = rules.generate_metadata.output.combined_metadata
     params:
-        pair_list = lambda wildcards: PAIRS[wildcards.pair],
+        pair_list = get_pair_list,
         window_size = config["compute_phylosor"]["window_size"],
         shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
     output:
@@ -143,31 +143,31 @@ rule compute_phylosor_newnull:
             --output {output.results} \
         """
 
-rule compute_hill:
-    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
-    conda: "../envs/general.yaml"
-    log: "logs/{pair}.{status}.{num}.hill.txt"
-    input:
-        tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
-        metadata = config["input_locations"]["metadata"]
-    params:
-        pair1 = lambda wildcards: PAIRS[wildcards.pair][0],
-        pair2 = lambda wildcards: PAIRS[wildcards.pair][1],
-        window_size = config["compute_phylosor"]["window_size"],
-        shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
-    output:
-        results = "results/hill/{pair}/{pair}.{status}.{num}.csv"
-    shell:
-        """
-        Rscript workflow/scripts/hill_monthly.R \
-            --tree {input.tree} \
-            --metadata {input.metadata} \
-            --pair1 {params.pair1:q} \
-            --pair2 {params.pair2:q} \
-            --window-size {params.window_size} \
-            {params.shuffle} \
-            --output {output.results} \
-        """
+#rule compute_hill:
+#    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
+#    conda: "../envs/general.yaml"
+#    log: "logs/{pair}.{status}.{num}.hill.txt"
+#    input:
+#        tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
+#        metadata = config["input_locations"]["metadata"]
+#    params:
+#        pair1 = lambda wildcards: PAIRS[wildcards.pair][0],
+#        pair2 = lambda wildcards: PAIRS[wildcards.pair][1],
+#        window_size = config["compute_phylosor"]["window_size"],
+#        shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
+#    output:
+#        results = "results/hill/{pair}/{pair}.{status}.{num}.csv"
+#    shell:
+#        """
+#        Rscript workflow/scripts/hill_monthly.R \
+#            --tree {input.tree} \
+#            --metadata {input.metadata} \
+#            --pair1 {params.pair1:q} \
+#            --pair2 {params.pair2:q} \
+#            --window-size {params.window_size} \
+#            {params.shuffle} \
+#            --output {output.results} \
+#        """
 
 #rule combine_hill:
 #    message: "Combine hill results for all comparisons"
@@ -186,22 +186,22 @@ rule compute_hill:
 #            {output.results}
 #        """
 #
-#rule combine_results_newnull:
-#    message: "Combine phylosor results for all comparisons"
-#    conda: "../envs/general.yaml"
-#    log: "logs/combine_results.txt"
-#    input:
-#        results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv",pair=PAIRS,num=range( 1,11 ) ),
-#        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv",pair=PAIRS,num=[1] )
-#    output:
-#        results = "results/output/phylosor_newnull_results.csv"
-#    shell:
-#        """
-#        python workflow/scripts/combine_results.py \
-#            {input.results_actual} \
-#            {input.results_nulls} \
-#            {output.results}
-#        """
+rule combine_results_newnull:
+    message: "Combine phylosor results for all comparisons"
+    conda: "../envs/general.yaml"
+    log: "logs/combine_results.txt"
+    input:
+        results_nulls = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=get_pair_dict.keys(), num=range( 1,11 ) ),
+        results_actual = expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=get_pair_dict.keys(), num=[1] )
+    output:
+        results = "results/output/phylosor_newnull_results.csv"
+    shell:
+        """
+        python workflow/scripts/combine_results.py \
+            {input.results_actual} \
+            {input.results_nulls} \
+            {output.results}
+        """
 #
 #rule plot_results_newnull:
 #    message: "Plot phylosor metric for pair: {wildcards.pair}"
