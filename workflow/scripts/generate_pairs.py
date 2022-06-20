@@ -67,7 +67,7 @@ def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_l
 
     selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)&(summary.index != "San Diego County")].index
     with open( output_loc, "w" ) as output:
-        [output.write( f"San Diego County,{i}" ) for i in selected]
+        [output.write( f"San Diego County,{i}\n" ) for i in selected]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( description="Generate location pairs from metadata with reasonable sampling" )
