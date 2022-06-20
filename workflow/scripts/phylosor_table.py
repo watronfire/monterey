@@ -1,5 +1,6 @@
 import argparse
 
+import numpy as np
 from dendropy import Tree
 import pandas as pd
 import time
@@ -61,6 +62,7 @@ def load_metadata( md_loc, tip_labels, verbose=True ):
     starting_time = time.time()
     metadata = pd.read_csv( md_loc, usecols=["accession_id", "date_collected", "site"], parse_dates=["date_collected"] )
     metadata = metadata.loc[metadata["accession_id"].isin( tip_labels )]
+    metadata["month"] = metadata["date_collected"].astype( 'datetime64[M]' )
     if verbose:
         print( f"Done in {time.time() - starting_time:.1f} seconds" )
     return metadata
@@ -70,6 +72,7 @@ def generate_date_seq( metadata, query, verbose=True ):
     min_date = metadata.loc[query, "date_collected"].min()
     max_date = metadata.loc[query, "date_collected"].max()
     return pd.date_range( start=min_date, end=max_date )
+
 
 def add_week_to_metadata( metadata, date_column, week_column ):
     from epiweeks import Week
@@ -111,26 +114,26 @@ def shuffle_locations( metadata, verbose=True ):
 
 
 def phylosor_table( tree, metadata, queryA, nameA, queryB, nameB, window, verbose=True ):
-    
-    date_seq = generate_date_seq( metadata, queryA|queryB )
+
+    date_seq = metadata["month"].sort_values().unique()
     if verbose:
-        print( f"Performing {len( date_seq[:-window] )} comparisons with window length {window}" )
+        print( f"Performing {len( date_seq )} comparisons." )
 
 
     output_df = list()
-    for i in range( len( date_seq[:-window] ) ):
+    for i, month in enumerate( date_seq ):
         start_time = time.time()
-        comparison = (date_seq[i],date_seq[i+30])
-        communityA = set( metadata.loc[metadata["date_collected"].between( *comparison )&queryA, "accession_id"].to_list() )
-        communityB = set( metadata.loc[metadata["date_collected"].between( *comparison )&queryB, "accession_id"].to_list() )
+        string_rep = np.datetime_as_string( month, unit="D" )
+        communityA = set( metadata.loc[(metadata["month"]==month)&queryA, "accession_id"].to_list() )
+        communityB = set( metadata.loc[(metadata["month"]==month)&queryB, "accession_id"].to_list() )
 
         if len( communityA ) + len( communityB ) == 0:
             if verbose:
-                print( f"{date_seq[i].date} being skipped. No sequences")
+                print( f"{string_rep} being skipped. No sequences")
             continue
 
         entry = phylosor( tree, communityA, communityB )
-        entry.extend( [date_seq[i].strftime( "%Y-%m-%d"), nameA, len( communityA), nameB, len( communityB )] )
+        entry.extend( [string_rep, nameA, len( communityA), nameB, len( communityB )] )
         output_df.append( entry )
 
         if verbose:
