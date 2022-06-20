@@ -41,7 +41,7 @@ def prepare_graph( summary, min_sequences, min_completeness, graph_loc ):
                 label="Mexico" )
     ax.scatter( "sequences", "completeness", data=summary.loc[summary["country"] == "Canada"],
                 label="Canada" )
-    ax.scatter( "sequences", "completeness", data=summary.loc["San Diego County"], label="San Diego" )
+    ax.scatter( "sequences", "completeness", data=summary.loc["San Diego"], label="San Diego" )
     ax.set_ylabel( "Proportion epiweeks sequenced" )
     ax.set_xlabel( "Total sequences" )
     ax.axvline( 1000, linestyle="dashed", linewidth=1, color="red" )
