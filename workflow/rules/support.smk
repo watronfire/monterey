@@ -16,8 +16,7 @@ def get_pair_dict( wildcards ):
     return PAIRS
 
 def get_pair_list( wildcards ):
-    pass    
-#return get_pair_dict(wildcards)[wildcards.pair]
+    return get_pair_dict(wildcards)[wildcards.pair]
 
 def generate_phylosor_results( wildcards ):
     PAIRS = get_pair_dict( wildcards )
