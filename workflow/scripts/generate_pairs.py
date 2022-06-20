@@ -27,7 +27,7 @@ def calculate_summary( md ):
     return_df = pd.concat( [seqs, completeness], axis=1, ignore_index=False )
     return_df.columns = ["sequences", "completeness"]
 
-    return_df["country"] = 'USA'
+    return_df["country"] = 'United States'
     return_df.loc[md.loc[md["country"] == "Canada","site"].unique(), "country"] = "Canada"
     return_df.loc[md.loc[md["country"] == "Mexico","site"].unique(), "country"] = "Mexico"
     return return_df
@@ -35,7 +35,7 @@ def calculate_summary( md ):
 
 def prepare_graph( summary, min_sequences, min_completeness, graph_loc ):
     fig, ax = plt.subplots( dpi=200, figsize=(6, 4) )
-    ax.scatter( "sequences", "completeness", data=summary.loc[summary["country"] == "USA"],
+    ax.scatter( "sequences", "completeness", data=summary.loc[summary["country"] == "United States"],
                 label="United States" )
     ax.scatter( "sequences", "completeness", data=summary.loc[summary["country"] == "Mexico"],
                 label="Mexico" )
