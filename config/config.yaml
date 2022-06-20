@@ -14,6 +14,10 @@ generate_nulls:
 prune_tree_to_pair:
   date_max: "2022-08-01"
 
+pairs:
+  min_sequences: 1000
+  min_completeness: 0.75
+
 compute_phylosor:
   window_size: 30
 
