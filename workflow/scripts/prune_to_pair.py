@@ -19,7 +19,7 @@ def prune_to_pair( md_loc, id_col, date_col, location_col, tree_loc, pair, outpu
         md = md.loc[md[date_col]<max_date]
 
     # Subset metadata to just sequences in pair + Other
-    md = md.loc[md[location_col].isin(pair + ["Other"])]
+    md = md.loc[md[location_col].isin(pair + ["root"])]
 
     print( f"Pruning to pair: {', '.join( pair )}" )
     for i in md[location_col].value_counts().iteritems():
