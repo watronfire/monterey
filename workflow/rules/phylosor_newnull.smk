@@ -197,8 +197,7 @@ rule combine_results_newnull:
     shell:
         """
         python workflow/scripts/combine_results.py \
-            {input.results_actual} \
-            {input.results_nulls} \
+            {input.results} \
             {output.results}
         """
 #
