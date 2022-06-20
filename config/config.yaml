@@ -1,6 +1,7 @@
 input_locations:
-  tree: "resources/uncondensed-final-tree.nh"
-  metadata: "resources/combined_md.csv"
+  tree: "resources/cog.tree"
+  metadata: "resources/outbreak_md.csv"
+  chn_metadata: "resources/early_chn.csv"
 
 columns:
   id_col: "accession_id"
