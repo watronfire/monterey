@@ -14,8 +14,9 @@ def get_pair_dict( wildcards, cp ):
                 PAIRS[short_name] = pair
     return PAIRS
 
-#def get_pair_list( wildcards ):
-#    return get_pair_dict(wildcards)[wildcards.pair]
+def get_pair_list( wildcards ):
+    pass    
+#return get_pair_dict(wildcards)[wildcards.pair]
 
 def generate_phylosor_results( wildcards ):
     global checkpoints
