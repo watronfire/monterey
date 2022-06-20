@@ -125,7 +125,7 @@ rule compute_phylosor_newnull:
     log: "logs/{pair}.{status}.{num}.phylosor_newnull.txt"
     input:
         tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
-        metadata = rules.generate_metadata.output.combined_metadata
+        metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
         pair_list = get_pair_list,
         window_size = config["compute_phylosor"]["window_size"],
