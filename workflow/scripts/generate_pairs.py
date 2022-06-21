@@ -41,7 +41,7 @@ def prepare_graph( summary, min_sequences, min_completeness, graph_loc ):
                 label="Mexico" )
     ax.scatter( "sequences", "completeness", data=summary.loc[summary["country"] == "Canada"],
                 label="Canada" )
-    ax.scatter( "sequences", "completeness", data=summary.loc["San Diego"], label="San Diego" )
+    ax.scatter( "sequences", "completeness", data=summary.loc["San Diego_CA"], label="San Diego" )
     ax.set_ylabel( "Proportion epiweeks sequenced" )
     ax.set_xlabel( "Total sequences" )
     ax.axvline( 1000, linestyle="dashed", linewidth=1, color="red" )
@@ -65,9 +65,9 @@ def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_l
 
     prepare_graph( summary, min_sequences, min_completeness, graph_loc )
 
-    selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)&(summary.index != "San Diego")].index
+    selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)&(summary.index != "San Diego_CA")].index
     with open( output_loc, "w" ) as output:
-        [output.write( f"San Diego,{i}\n" ) for i in selected]
+        [output.write( f"San Diego_CA,{i}\n" ) for i in selected]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( description="Generate location pairs from metadata with reasonable sampling" )
