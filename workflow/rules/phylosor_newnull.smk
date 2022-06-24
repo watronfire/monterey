@@ -80,7 +80,8 @@ checkpoint generate_pairs:
         completeness = config["pairs"]["min_completeness"]
     output:
         pairs = "intermediates/pairs/pairs.txt",
-        pair_graph = "results/reports/pair_graph.pdf"
+        pair_graph = "results/reports/pair_graph.pdf",
+        summary = "intermediates/pairs/pairs.csv"
     shell:
         """
         python workflow/scripts/generate_pairs.py \
@@ -88,7 +89,8 @@ checkpoint generate_pairs:
             --min-sequences {params.sequences} \
             --min-completeness {params.completeness} \
             --output {output.pairs} \
-            --graph {output.pair_graph}
+            --graph {output.pair_graph} \
+            --summary {output.summary}
         """
 
 rule prune_tree_to_pair_newnull:

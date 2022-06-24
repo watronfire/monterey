@@ -56,18 +56,20 @@ def prepare_graph( summary, min_sequences, min_completeness, graph_loc ):
     plt.savefig( graph_loc )
 
 
-def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_loc ):
+def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_loc, summary_loc ):
     # Load metadata and add site information.
     md = load_metadata( md_loc )
 
     # Calculate sequences and completeness per site
     summary = calculate_summary( md )
+    summary.to_csv( summary_loc )
 
     prepare_graph( summary, min_sequences, min_completeness, graph_loc )
 
-    selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)&(summary.index != "San Diego_CA")].index
+    selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)].index
     with open( output_loc, "w" ) as output:
-        [output.write( f"San Diego_CA,{i}\n" ) for i in selected]
+        [output.write( f"San Diego_CA,{i}\n" ) for i in selected if i != "San Diego_CA"]
+        [output.write( f"Quebec,{i}" ) for i in selected if i != "Quebec"]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( description="Generate location pairs from metadata with reasonable sampling" )
@@ -78,6 +80,7 @@ if __name__ == "__main__":
     parser.add_argument( "--min-completeness", help="Keep locations with sequences collected from at least this many epiweeks", required=True )
     parser.add_argument( "--output", help="location to save pairs", required=True )
     parser.add_argument( "--graph", help="location to save diagnostic plot", required=True )
+    parser.add_argument( "--summary", help="location to save summary statistics for each location", required=True )
 
     args = parser.parse_args()
 
@@ -86,5 +89,6 @@ if __name__ == "__main__":
         min_sequences=args.min_sequences,
         min_completeness=args.min_completeness,
         output_loc=args.output,
-        graph_loc=args.graph
+        graph_loc=args.graph,
+        summary_loc=args.summary
     )
