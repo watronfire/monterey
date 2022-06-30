@@ -57,6 +57,13 @@ def load_tree( tree_loc, verbose=True ):
 
 
 def load_metadata( md_loc, tip_labels, verbose=True ):
+    """
+    Loads metadata from md_loc, filters to tips specified by tip_labels, and appends a month columns.
+    :param md_loc: str
+    :param tip_labels: list
+    :param verbose: bool
+    :return: pandas.DataFrame
+    """
     if verbose:
         print( "Loading metadata...", end="" )
     starting_time = time.time()
@@ -102,8 +109,7 @@ def shuffle_locations( metadata, verbose=True ):
         print( f"Shuffling locations within tree...", end="" )
 
     start_time = time.time()
-    return_md = add_week_to_metadata( metadata, "date_collected", "week" )
-    md_shuffled = return_md.groupby( "week" ).apply( shuffle_columns, column="site" )
+    md_shuffled = metadata.groupby( "month" ).apply( shuffle_columns, column="site" )
 
     assert md_shuffled.shape[0] == md.shape[0], f"Shuffled dataframe doesn't have the same number of rows (shuffled: {md_shuffled.shape[0]} vs. original: {md.shape[0]})"
     assert not md_shuffled["shuffled"].equals( md_shuffled["site"] ), f"Shuffled column is identical to original column"

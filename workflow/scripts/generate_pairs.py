@@ -69,7 +69,7 @@ def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_l
     selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)].index
     with open( output_loc, "w" ) as output:
         [output.write( f"San Diego_CA,{i}\n" ) for i in selected if i != "San Diego_CA"]
-        [output.write( f"Quebec,{i}\n" ) for i in selected if i != "Quebec"]
+        [output.write( f"Québec,{i}\n" ) for i in selected if i != "Québec"]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( description="Generate location pairs from metadata with reasonable sampling" )
