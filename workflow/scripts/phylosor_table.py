@@ -82,7 +82,6 @@ def hill( tree, comA, comB, q=1, rel_then_pool=True ):
         gamma_pd = np.exp( -1 * (df["branch_length"] * (df["total_comm"] / gT) * np.log(df["total_comm"] / gT ) ).sum() )
         alpha_pd = np.exp( -1 * ( community_diversity.multiply( df["branch_length"], axis=0 ) * np.log( community_diversity ) ).sum().sum() ) / 2
         beta_pd = gamma_pd / alpha_pd
-
         local_similarity = 1 - np.log( beta_pd ) / np.log(2)
         region_similarity = local_similarity
     else:

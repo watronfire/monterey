@@ -170,6 +170,31 @@ rule compute_hill:
             --hill
         """
 
+rule compute_hill_r:
+    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
+    conda: "../envs/general.yaml"
+    input:
+        tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
+        metadata = config["input_locations"]["metadata"]
+    params:
+        pair1 = lambda wildcards: PAIRS[wildcards.pair][0],
+        pair2 = lambda wildcards: PAIRS[wildcards.pair][1],
+        window_size = config["compute_phylosor"]["window_size"],
+        shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
+    output:
+        results = "results/hill_r/{pair}/{pair}.{status}.{num}.csv"
+    shell:
+        """
+        Rscript workflow/scripts/hill_monthly.R \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --pair1 {params.pair1:q} \
+            --pair2 {params.pair2:q} \
+            --window-size {params.window_size} \
+            {params.shuffle} \
+            --output {output.results} \
+        """
+
 #rule combine_hill:
 #    message: "Combine hill results for all comparisons"
 #    conda: "../envs/general.yaml"
