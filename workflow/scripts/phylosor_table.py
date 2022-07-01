@@ -287,7 +287,7 @@ def comparison_table( tree, metadata, queryA, nameA, queryB, nameB, window, meth
         communityA = set( metadata.loc[(metadata["month"]==month)&queryA, "accession_id"].to_list() )
         communityB = set( metadata.loc[(metadata["month"]==month)&queryB, "accession_id"].to_list() )
 
-        if len( communityA ) + len( communityB ) == 0:
+        if (len( communityA ) == 0) or (len( communityB ) == 0 ):
             if verbose:
                 print( f"{string_rep} being skipped. No sequences")
             continue
