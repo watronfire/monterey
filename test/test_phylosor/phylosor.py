@@ -3,6 +3,26 @@ import pandas as pd
 import time
 
 def phylosor( tree, comA, comB ):
+    """ Calculates the branch lengths of two communities, as well as the branch lengths that they share.
+
+    Parameters
+    ----------
+    tree : dendropy.Tree
+        phylogenetic tree containing taxa from both communities.
+    comA : list
+        set of taxa collected from first community.
+    comB : list
+        set of taxa collected from second community.
+
+    Returns
+    -------
+    blA : float
+        total branch length of all taxa in first community.
+    blB : float
+        total branch length of all taxa in second community.
+    blBoth : float
+        total branch length shared by both communities
+    """
     blA = 0
     blB = 0
     blBoth = 0

@@ -1,5 +1,4 @@
 import argparse
-
 import numpy as np
 from dendropy import Tree
 import pandas as pd
@@ -36,13 +35,19 @@ def hill( tree, comA, comB, q=1, rel_then_pool=True ):
     region_similarity : float
         region species overlap. Similar to UniFrac and bound by [0,1]
     """
-
     df = {
         "name" : [],
         "branch_length" : [],
         "commA" : [],
         "commB" : []
     }
+
+    if rel_then_pool:
+        abunA = 1 / len( comA )
+        abunB = 1 / len( comB )
+    else:
+        abunA = 1
+        abunB = 1
 
     node_iter = 0
     tree0 = tree.extract_tree()
@@ -53,8 +58,8 @@ def hill( tree, comA, comB, q=1, rel_then_pool=True ):
 
         if node.is_leaf():
             name = node.taxon.label
-            node.commA = 1 if name in comA else 0
-            node.commB = 1 if name in comB else 0
+            node.commA = abunA if name in comA else 0
+            node.commB = abunB if name in comB else 0
         else:
             name =  f"node_{node_iter}"
             node_iter += 1
@@ -70,9 +75,6 @@ def hill( tree, comA, comB, q=1, rel_then_pool=True ):
     df = pd.DataFrame( df )
     df = df.loc[(df["commA"]>0)|(df["commB"]>0)]
 
-    if rel_then_pool:
-        df["commA"] = df["commA"] / df["commA"].sum()
-        df["commB"] = df["commB"] / df["commB"].sum()
     df["total_comm"] = df["commA"] + df["commB"]
 
     gT = ( df["branch_length"] * df["total_comm"] ).sum()
