@@ -145,31 +145,30 @@ rule compute_phylosor_newnull:
             --output {output.results} \
         """
 
-#rule compute_hill:
-#    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
-#    conda: "../envs/general.yaml"
-#    log: "logs/{pair}.{status}.{num}.hill.txt"
-#    input:
-#        tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
-#        metadata = config["input_locations"]["metadata"]
-#    params:
-#        pair1 = lambda wildcards: PAIRS[wildcards.pair][0],
-#        pair2 = lambda wildcards: PAIRS[wildcards.pair][1],
-#        window_size = config["compute_phylosor"]["window_size"],
-#        shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
-#    output:
-#        results = "results/hill/{pair}/{pair}.{status}.{num}.csv"
-#    shell:
-#        """
-#        Rscript workflow/scripts/hill_monthly.R \
-#            --tree {input.tree} \
-#            --metadata {input.metadata} \
-#            --pair1 {params.pair1:q} \
-#            --pair2 {params.pair2:q} \
-#            --window-size {params.window_size} \
-#            {params.shuffle} \
-#            --output {output.results} \
-#        """
+rule compute_hill:
+    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
+    conda: "../envs/general.yaml"
+    log: "logs/{pair}.{status}.{num}.hill.txt"
+    input:
+        tree=rules.prune_tree_to_pair_newnull.output.pruned_tree,
+        metadata=rules.collapse_location_in_metadata.output.collapsed_metadata
+    params:
+        pair_list=get_pair_list,
+        window_size=config["compute_phylosor"]["window_size"],
+        shuffle=lambda wildcards : "--shuffle" if wildcards.status == "null" else ""
+    output:
+        results = "results/hill/{pair}/{pair}.{status}.{num}.csv"
+    shell:
+        """
+        python workflow/scripts/phylosor_table.py \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --pair-list {params.pair_list:q} \
+            --window-size {params.window_size} \
+            {params.shuffle} \
+            --output {output.results} \
+            --hill
+        """
 
 #rule combine_hill:
 #    message: "Combine hill results for all comparisons"
