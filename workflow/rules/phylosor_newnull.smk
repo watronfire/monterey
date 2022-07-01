@@ -175,7 +175,7 @@ rule compute_hill_r:
     conda: "../envs/general.yaml"
     input:
         tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
-        metadata = config["input_locations"]["metadata"]
+        metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
         pair_list=get_pair_list,
         window_size = config["compute_phylosor"]["window_size"],
