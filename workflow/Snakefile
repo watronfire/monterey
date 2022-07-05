@@ -18,7 +18,8 @@ rule all:
     input:
         tree = "intermediates/rename_tree/cog_accession.tree",
         pairs = "intermediates/pairs/pairs.txt",
-        combined_results = "results/output/phylosor_newnull_results.csv"
+        combined_results = "results/output/phylosor_newnull_results.csv",
+        hill_results = "results/output/hill_results.csv"
 
 # Include support functions for pipeline
 include: "rules/support.smk"
