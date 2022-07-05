@@ -262,7 +262,7 @@ def shuffle_locations( metadata, verbose=True ):
         print( f"Shuffling locations within tree...", end="" )
 
     start_time = time.time()
-    md_shuffled = metadata.apply( shuffle_columns, column="site" )
+    md_shuffled = shuffle_columns( metadata, column="site" )
 
     assert md_shuffled.shape[0] == md.shape[0], f"Shuffled dataframe doesn't have the same number of rows (shuffled: {md_shuffled.shape[0]} vs. original: {md.shape[0]})"
     assert not md_shuffled["shuffled"].equals( md_shuffled["site"] ), f"Shuffled column is identical to original column"
