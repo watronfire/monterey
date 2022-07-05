@@ -170,47 +170,21 @@ rule compute_hill:
             --hill
         """
 
-rule compute_hill_r:
-    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
+rule combine_hill:
+    message: "Combine hill results for all comparisons"
     conda: "../envs/general.yaml"
+    log: "logs/combine_results.txt"
     input:
-        tree = rules.prune_tree_to_pair_newnull.output.pruned_tree,
-        metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
-    params:
-        pair_list=get_pair_list,
-        window_size = config["compute_phylosor"]["window_size"],
-        shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
+        results = generate_hill_results
     output:
-        results = "results/hill_r/{pair}/{pair}.{status}.{num}.csv"
+        results = "results/output/hill_results.csv"
     shell:
         """
-        Rscript workflow/scripts/hill_monthly.R \
-            --tree {input.tree} \
-            --metadata {input.metadata} \
-            --pair1 {params.pair_list[0]:q} \
-            --pair2 {params.pair_list[1]:q} \
-            --window-size {params.window_size} \
-            {params.shuffle} \
-            --output {output.results} \
+        python workflow/scripts/combine_results.py \
+            {input.results} \
+            {output.results}
         """
 
-#rule combine_hill:
-#    message: "Combine hill results for all comparisons"
-#    conda: "../envs/general.yaml"
-#    log: "logs/combine_results.txt"
-#    input:
-#        results_nulls = expand( "results/hill/{pair}/{pair}.null.{num}.csv",pair=JS_PAIRS,num=range( 1,11 ) ),
-#        results_actual = expand( "results/hill/{pair}/{pair}.actual.{num}.csv",pair=JS_PAIRS,num=[1] )
-#    output:
-#        results = "results/output/hill_results.csv"
-#    shell:
-#        """
-#        python workflow/scripts/combine_results.py \
-#            {input.results_actual} \
-#            {input.results_nulls} \
-#            {output.results}
-#        """
-#
 rule combine_results_newnull:
     message: "Combine phylosor results for all comparisons"
     conda: "../envs/general.yaml"
