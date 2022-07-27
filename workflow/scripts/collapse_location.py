@@ -79,7 +79,7 @@ def collapse_metadata( md_loc, output ):
     md.loc[md["division"] == "California", "site"] = md["location"]
     #md.loc[md["division"].isin( ["Guam", "Puerto Rico", "Virgin Islands", "Northern Mariana Islands"] ), "site"] = md["division"]
 
-    md.loc[(md["country"]=="United States"),"site"] = md.loc[(md["country"]=="United States"),"site"] + "_USA"
+    md.loc[(md["country"]=="United States")&(md["division"]!="California"),"site"] = md.loc[(md["country"]=="United States")&(md["division"]!="California"),"site"] + "_USA"
     md.loc[(md["country"]=="Canada"), "site"] = md.loc[(md["country"]=="Canada"), "site"] + "_CAN"
     md.loc[(md["country"]=="Mexico"), "site"] = md.loc[(md["country"]=="Mexico"), "site"] + "_MEX"
     md.loc[md["division"]=="California", "site"] = md.loc[md["division"]=="California", "site"] + "_CA"
