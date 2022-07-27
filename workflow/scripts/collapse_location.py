@@ -75,11 +75,14 @@ def collapse_metadata( md_loc, output ):
     md = pd.read_csv( md_loc )
     md["site"] = "Other"
     md.loc[md["country"].isin( na_countries),"site"] = md["country"]
-    md.loc[md["country"].isin( ["Canada", "Mexico"] ), "site"] = md["division"]
-    md.loc[md["country"] == "United States", "site"] = md["location"]
-    md.loc[md["division"].isin( ["Guam", "Puerto Rico", "Virgin Islands", "Northern Mariana Islands"] ), "site"] = md["division"]
+    md.loc[md["country"].isin( ["Canada", "Mexico", "United States"] ), "site"] = md["division"]
+    md.loc[md["division"] == "California", "site"] = md["location"]
+    #md.loc[md["division"].isin( ["Guam", "Puerto Rico", "Virgin Islands", "Northern Mariana Islands"] ), "site"] = md["division"]
 
-    md.loc[(md["country"]=="United States"),"site"] = md.loc[(md["country"]=="United States"),"site"] + "_" + md.loc[(md["country"]=="United States"),"division"].map( us_state_to_abbrev )
+    md.loc[(md["country"]=="United States"),"site"] = md.loc[(md["country"]=="United States"),"site"] + "_USA"
+    md.loc[(md["country"]=="Canada"), "site"] = md.loc[(md["country"]=="Canada"), "site"] + "_CAN"
+    md.loc[(md["country"]=="Mexico"), "site"] = md.loc[(md["country"]=="Mexico"), "site"] + "_MEX"
+    md.loc[md["division"]=="California", "site"] = md.loc[md["division"]=="California", "site"] + "_CA"
 
     early = md.sort_values( "date_collected" ).head(50)["accession_id"].to_list()
     md.loc[md["accession_id"].isin( early ),"site"] = "root"
