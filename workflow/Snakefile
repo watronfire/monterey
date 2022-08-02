@@ -1,32 +1,18 @@
 # Main entrypoint of the workflow.
 configfile: "config/config.yaml"
 
-# Calculate pairs here
-#with open( "resources/pairs.txt", "r" ) as pair_file:
-#    PAIRS = dict()
-#    JS_PAIRS = dict()
-#    for line in pair_file:
-#        if not line.startswith( "#" ):
-#            pair = line.strip().split( "," )
-#            short_name = line.strip().replace( ",", "-" ).replace( " ", "" )
-#            PAIRS[short_name] = pair
-#            if pair[0] != pair[1]:
-#                JS_PAIRS[short_name] = pair
-
-
 rule all:
     input:
         tree = "intermediates/rename_tree/cog_accession.tree",
         pairs = "intermediates/pairs/pairs.txt",
-        combined_results = "results/output/phylosor_newnull_results.csv",
+        combined_results = "results/output/phylosor_results.csv",
         #hill_results = "results/output/hill_results.csv"
 
 # Include support functions for pipeline
 include: "rules/support.smk"
 
 # Include phylosor rules for pipeline
-#include: "rules/phylosor.smk"
-include: "rules/phylosor_newnull.smk"
+include: "rules/phylosor.smk"
 
 # Include jensen-shannon rules
 include: "rules/jensenshannon.smk"
