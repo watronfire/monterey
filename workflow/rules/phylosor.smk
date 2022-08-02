@@ -10,7 +10,8 @@ rule generate_metadata:
         ec = pd.read_csv( input.early_chn, parse_dates=["date_collected"] )
 
         md = pd.read_csv( input.metadata, parse_dates=["date_collected"] )
-        md = md.drop( columns="Unnamed: 0" )
+        if "Unnamed: 0" in md.columns:
+            md = md.drop( columns="Unnamed: 0" )
         md = pd.concat( [md, ec] )
         md["strain"] = md["strain"].str.slice( start=8 )
         md.to_csv( output.combined_metadata, index=False )
