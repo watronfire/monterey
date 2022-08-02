@@ -1,6 +1,6 @@
 input_locations:
   tree: "resources/cog.tree"
-  metadata: "resources/outbreak_md.csv"
+  metadata: "resources/gisaid_metadata.csv"
   chn_metadata: "resources/early_chn.csv"
 
 columns:

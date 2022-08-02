@@ -21,8 +21,8 @@ def get_pair_list( wildcards ):
 def generate_phylosor_results( wildcards ):
     PAIRS = get_pair_dict( wildcards )
 
-    results = expand( "results/phylosor_newnull/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range( 1,11 ) )
-    results.extend( expand( "results/phylosor_newnull/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ) )
+    results = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range( 1,11 ) )
+    results.extend( expand( "results/phylosor/{pair}/{pair}.actual.{num}.csv", pair=PAIRS, num=[1] ) )
     return results
 
 def generate_hill_results( wildcards ):
