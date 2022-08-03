@@ -1,5 +1,5 @@
 input_locations:
-  tree: "resources/cog.tree"
+  tree: "resources/global.tree"
   metadata: "resources/gisaid_metadata.csv"
   chn_metadata: "resources/early_chn.csv"
 

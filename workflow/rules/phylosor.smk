@@ -33,7 +33,7 @@ rule metadata_prune:
         tree_tips = [i for i in shell( "gotree labels < {input.tree}", iterable=True )]
 
         # Identify tips that are in tree but aren't in metadata
-        missing = np.setdiff1d( tree_tips, md["strain"].to_list() )
+        missing = np.setdiff1d( tree_tips, md["accession_id"].to_list() )
         print( f"{len(missing)} of {len(md['strain'])} tips missing" )
 
         with open( output.missing, "w" ) as missing_file:
@@ -43,19 +43,19 @@ rule metadata_prune:
         shell( "gotree prune --tipfile {output.missing} < {input.tree} > {output.tree}" )
 
 
-rule rename_tree_to_accession:
-    message: "Rename tips of tree to accession IDs from strain names"
-    input:
-        tree = rules.metadata_prune.output.tree,
-        metadata = rules.generate_metadata.output.combined_metadata
-    output:
-        renames = "intermediates/rename_tree/renames.tsv",
-        tree = "intermediates/rename_tree/cog_accession.tree"
-    shell:
-        """
-        cut -f1,2 -d, {input.metadata} | sed "s/,/\t/g" > {output.renames} &&
-        gotree rename --map {output.renames} < {input.tree} > {output.tree}
-        """
+#rule rename_tree_to_accession:
+#    message: "Rename tips of tree to accession IDs from strain names"
+#    input:
+#        tree = rules.metadata_prune.output.tree,
+#        metadata = rules.generate_metadata.output.combined_metadata
+#    output:
+#        renames = "intermediates/rename_tree/renames.tsv",
+#        tree = "intermediates/rename_tree/cog_accession.tree"
+#    shell:
+#        """
+#        cut -f1,2 -d, {input.metadata} | sed "s/,/\t/g" > {output.renames} &&
+#        gotree rename --map {output.renames} < {input.tree} > {output.tree}
+#        """
 
 rule collapse_location_in_metadata:
     message: "Add column to metadata with most-relevant location data"
@@ -99,7 +99,7 @@ rule prune_tree_to_pair:
     conda: "../envs/general.yaml"
     log: "logs/{pair}.pruning.txt"
     input:
-        tree = rules.rename_tree_to_accession.output.tree,
+        tree = rules.metadata_prune.output.tree,
         metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
     params:
         pair_list = get_pair_list,
