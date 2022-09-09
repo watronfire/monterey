@@ -3,107 +3,8 @@ import numpy as np
 from dendropy import Tree
 import pandas as pd
 import time
-
-def hill( tree, comA, comB, q=1, rel_then_pool=True ):
-    """Calculates the phylogenetic beta diversity using Hill numbers for two communities.
-    Parameters
-    ----------
-    tree : dendropy.Tree
-        phylogenetic tree containing taxa from both communities.
-    comA : list of str
-        set of taxa collected from first community.
-    comB : list of str
-        set of taxa collected from second community.
-    q : float
-        Hill number, q = 0 to get species richness, q = 1 (default) to get shannon entropy, q = 2 will give inverse Simpson.
-    rel_then_pool : bool
-        default is True. Abundance of species are first changed to relative abundance within sites, then pooled into one
-        assemblage. If False, sites are pooled first, then change abundance of species to relative abundance.
-
-    Returns
-    -------
-    q : float
-        Hill number used in calculations
-    gamma_pd : float
-        phylogenetic gamma diversity
-    alpha_pd : float
-        phylogenetic alpha diversity
-    beta_pd : float
-        phylogentic beta diversity
-    local_similarity : float
-        local species overlap. Similar to PhyloSor and bound by [0,1].
-    region_similarity : float
-        region species overlap. Similar to UniFrac and bound by [0,1]
-    """
-    df = {
-        "name" : [],
-        "branch_length" : [],
-        "commA" : [],
-        "commB" : []
-    }
-
-    if rel_then_pool:
-        abunA = 1 / len( comA )
-        abunB = 1 / len( comB )
-    else:
-        abunA = 1
-        abunB = 1
-
-    node_iter = 0
-    tree0 = tree.extract_tree()
-    for node in tree0.postorder_node_iter():
-
-        if node == tree.seed_node:
-            continue
-
-        if node.is_leaf():
-            name = node.taxon.label
-            node.commA = abunA if name in comA else 0
-            node.commB = abunB if name in comB else 0
-        else:
-            name =  f"node_{node_iter}"
-            node_iter += 1
-            node.commA = 0
-            node.commB = 0
-            for child in node.child_node_iter():
-                node.commA += child.commA
-                node.commB += child.commB
-        df["commA"].append( node.commA )
-        df["commB"].append( node.commB )
-        df["name"].append( name )
-        df["branch_length"].append( node.edge_length )
-    df = pd.DataFrame( df )
-    df = df.loc[(df["commA"]>0)|(df["commB"]>0)]
-
-    df["total_comm"] = df["commA"] + df["commB"]
-
-    gT = ( df["branch_length"] * df["total_comm"] ).sum()
-    community_diversity = df[["commA", "commB"]] / gT
-
-    if q == 1:
-        gamma_pd = np.exp( -1 * (df["branch_length"] * (df["total_comm"] / gT) * np.log(df["total_comm"] / gT ) ).sum() )
-        alpha_pd = np.exp( -1 * ( community_diversity.multiply( df["branch_length"], axis=0 ) * np.log( community_diversity ) ).sum().sum() ) / 2
-        beta_pd = gamma_pd / alpha_pd
-        local_similarity = 1 - np.log( beta_pd ) / np.log(2)
-        region_similarity = local_similarity
-    else:
-        exponent = 1 / ( 1 - q )
-        gamma_pd = np.power( ( df["branch_length"] * np.power( df["total_comm"] / gT, q ) ).sum(), exponent )
-        alpha_a = np.power( community_diversity.loc[community_diversity["commA"]>0,"commA"], q ).multiply( df["branch_length"], axis=0 ).sum()
-        alpha_b = np.power( community_diversity.loc[community_diversity["commB"]>0,"commB"], q ).multiply( df["branch_length"], axis=0 ).sum()
-        alpha_pd = np.power( alpha_a + alpha_b, exponent ) / 2
-        beta_pd = gamma_pd / alpha_pd
-        local_similarity = 1 - ( np.power( beta_pd, 1.0 - q ) - 1 ) / ( np.power( 2, 1.0 - q ) - 1 )
-        region_similarity = 1 - ( np.power( beta_pd, q - 1.0 ) - 1 ) / ( np.power( 2, q - 1.0 ) - 1 )
-
-    return [
-        q,
-        gamma_pd,
-        alpha_pd,
-        beta_pd,
-        local_similarity,
-        region_similarity
-    ]
+from subprocess import run
+from tempfile import NamedTemporaryFile
 
 def get_edge_length( node ):
     """Gets edge length of node, even if not present.
@@ -128,10 +29,10 @@ def phylosor( tree, comA, comB ):
     ----------
     tree : dendropy.Tree
         phylogenetic tree containing taxa from both communities.
-    comA : list
-        set of taxa collected from first community.
-    comB : list
-        set of taxa collected from second community.
+    comA : str
+        file containing set of taxa collected from first community.
+    comB : str
+        file containing set of taxa collected from second community.
 
     Returns
     -------
@@ -144,59 +45,13 @@ def phylosor( tree, comA, comB ):
     """
     blA = 0
     blB = 0
-    blBoth = 0
 
-    tree0 = tree.extract_tree()
-    for i in tree0.leaf_nodes():
-        if i.taxon.label in comA:
-            blA += get_edge_length( i )
-            for j in i.ancestor_iter():
-                if getattr( j, "comA", False ):
-                    break
-                elif j.edge.length is not None:
-                    j.comA = True
-                    blA += j.edge.length
-                    if getattr( j, "comB", False ):
-                        blBoth += j.edge.length
-        elif i.taxon.label in comB:
-            blB += get_edge_length( i )
-            for j in i.ancestor_iter():
-                if getattr( j, "comB", False ):
-                    break
-                elif j.edge.length is not None:
-                    j.comB = True
-                    blB += j.edge.length
-                    if getattr( j, "comA", False ):
-                        blBoth += j.edge.length
-
-    return [blA, blB, blBoth]
+    phylosor_output = run( f"pismo --tree {tree} --commA {comA} --commB {comB}", capture_output=True, text=True, shell=True )
+    return [i for i in map(float, phylosor_output.stderr.strip().split( "\n" ))]
     #print( f"blA: {blA}" )
     #print( f"blB: {blB}" )
     #print( f"blBoth: {blBoth}" )
     #print( f"phylosor: {blBoth / (0.5* (blA + blB) ):.2f}" )
-
-
-def load_tree( tree_loc, verbose=True ):
-    """ Loads a newick tree from file, with additional functionality to report how long loading took.
-
-    Parameters
-    ----------
-    tree_loc : str
-        path to newick file.
-    verbose : bool
-        whether to report how long loading took.
-
-    Returns
-    -------
-    dendropy.Tree
-    """
-    if verbose:
-        print( "Loading tree...", end="" )
-    starting_time = time.time()
-    tree = Tree.get( path=tree_loc, schema="newick", preserve_underscores=True )
-    if verbose:
-        print( f"Done in {time.time() - starting_time:.1f} seconds" )
-    return tree
 
 
 def load_metadata( md_loc, tip_labels, verbose=True ):
@@ -276,7 +131,7 @@ def shuffle_locations( metadata, verbose=True ):
 
 def comparison_table( tree, metadata, queryA, nameA, queryB, nameB, window, method, verbose=True ):
 
-    method_func = phylosor if method=="phylosor" else hill
+    method_func = phylosor
 
     date_seq = metadata["month"].sort_values().unique()
     if verbose:
@@ -294,12 +149,16 @@ def comparison_table( tree, metadata, queryA, nameA, queryB, nameB, window, meth
                 print( f"{string_rep} being skipped. No sequences")
             continue
 
-        entry = method_func( tree, communityA, communityB )
+        with NamedTemporaryFile( mode="w", delete=False ) as commA_file, NamedTemporaryFile( mode="w", delete=False ) as commB_file:
+            commA_file.write( "\n".join( communityA ) )
+            commB_file.write( "\n".join( communityB ) )
+
+        entry = method_func( tree, commA_file.name, commB_file.name )
         entry.extend( [string_rep, nameA, len( communityA), nameB, len( communityB )] )
         output_df.append( entry )
 
         if verbose:
-            print( f"Completed {i} of {len(date_seq)} comparisons (took {time.time() - start_time:.1f} seconds)." )
+            print( f"Completed {i} of {len(date_seq)} comparisons (took {time.time():.1f} seconds)" )
 
     headers = {
         "phylosor" : ["blA", "blB", "blBoth", "date", "siteA", "countA", "siteB", "countB"],
@@ -328,8 +187,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    t = load_tree( tree_loc=args.tree )
-    tl = [i.label for i in t.taxon_namespace]
+    gotree_output = run( f"gotree labels -i {args.tree}", capture_output=True, text=True, shell=True ) 
+    tl = gotree_output.stdout.split( "\n" )
 
     md = load_metadata( md_loc=args.metadata, tip_labels=tl )
 
@@ -349,7 +208,7 @@ if __name__ == "__main__":
         query_A = md["site"]== name_A
         query_B = md["site"]== name_B
 
-    output = comparison_table( tree=t,
+    output = comparison_table( tree=args.tree,
                                metadata=md,
                                queryA=query_A,
                                nameA=name_A,

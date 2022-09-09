@@ -4,7 +4,7 @@ import pandas as pd
 from epiweeks import Week
 from matplotlib import pyplot as plt
 from matplotlib.ticker import PercentFormatter
-
+from itertools import combinations
 
 def load_metadata( md_loc ):
     usecols = ["accession_id", "date_collected", "country", "division", "site"]
@@ -56,7 +56,7 @@ def prepare_graph( summary, min_sequences, min_completeness, graph_loc ):
     plt.savefig( graph_loc )
 
 
-def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_loc, summary_loc ):
+def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_loc, summary_loc, locations ):
     # Load metadata and add site information.
     md = load_metadata( md_loc )
 
@@ -68,8 +68,11 @@ def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_l
 
     selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)].index
     with open( output_loc, "w" ) as output:
-        [output.write( f"San Diego_CA,{i}\n" ) for i in selected if i != "San Diego_CA"]
-        [output.write( f"Québec_CAN,{i}\n" ) for i in selected if i != "Québec"]
+        if locations is not None:
+            for loc in locations:
+                [output.write( f"{loc},{i}\n" ) for i in selected if i != loc]
+        else:
+            [output.write( f"{pair[0]},{pair[1]}\n" ) for pair in combinations( locations, 2 )]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( description="Generate location pairs from metadata with reasonable sampling" )
@@ -81,6 +84,7 @@ if __name__ == "__main__":
     parser.add_argument( "--output", help="location to save pairs", required=True )
     parser.add_argument( "--graph", help="location to save diagnostic plot", required=True )
     parser.add_argument( "--summary", help="location to save summary statistics for each location", required=True )
+    parser.add_argument( "--locations", nargs="+", help="locations to compare suitable locations to. Leave blank for pairwise", default=None )
 
     args = parser.parse_args()
 
@@ -90,5 +94,6 @@ if __name__ == "__main__":
         min_completeness=args.min_completeness,
         output_loc=args.output,
         graph_loc=args.graph,
-        summary_loc=args.summary
+        summary_loc=args.summary,
+        locations=args.locations
     )

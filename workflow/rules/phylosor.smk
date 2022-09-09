@@ -91,7 +91,8 @@ checkpoint generate_pairs:
             --min-completeness {params.completeness} \
             --output {output.pairs} \
             --graph {output.pair_graph} \
-            --summary {output.summary}
+            --summary {output.summary} \
+            --locations 'San Diego_CA' 'Quebec_CAN'
         """
 
 rule prune_tree_to_pair:
