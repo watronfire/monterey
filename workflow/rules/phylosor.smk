@@ -4,7 +4,7 @@ rule generate_metadata:
         metadata = config["input_locations"]["metadata"],
         early_chn = config["input_locations"]["chn_metadata"]
     output:
-        combined_metadata = "resources/combined_md.csv"
+        combined_metadata = "resources/combined_md.csv.gz"
     run:
         import pandas as pd
         ec = pd.read_csv( input.early_chn, parse_dates=["date_collected"] )
@@ -62,7 +62,7 @@ rule collapse_location_in_metadata:
     input:
         metadata = rules.generate_metadata.output.combined_metadata
     output:
-        collapsed_metadata = "intermediates/collapse_location/metadata.csv"
+        collapsed_metadata = "intermediates/collapse_location/metadata.csv.gz"
     shell:
         """
         python workflow/scripts/collapse_location.py \

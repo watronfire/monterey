@@ -1,6 +1,6 @@
 input_locations:
   tree: "resources/global_rerooted.tree"
-  metadata: "resources/gisaid_metadata.csv"
+  metadata: "resources/output_2022-08-02.csv.gz"
   chn_metadata: "resources/early_chn.csv"
 
 columns:
@@ -12,7 +12,7 @@ generate_nulls:
   groupby: "site"
 
 prune_tree_to_pair:
-  date_max: "2022-08-01"
+  date_max: "2022-11-01"
 
 pairs:
   min_sequences: 1000
