@@ -3,7 +3,7 @@ configfile: "config/config.yaml"
 
 rule all:
     input:
-        tree = "intermediates/rename_tree/cog_accession.tree",
+        tree = "intermediates/metadata_prune/global_md.tree",
         pairs = "intermediates/pairs/pairs.txt",
         combined_results = "results/output/phylosor_results.csv",
         #hill_results = "results/output/hill_results.csv"

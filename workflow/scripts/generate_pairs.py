@@ -72,7 +72,7 @@ def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_l
             for loc in locations:
                 [output.write( f"{loc},{i}\n" ) for i in selected if i != loc]
         else:
-            [output.write( f"{pair[0]},{pair[1]}\n" ) for pair in combinations( locations, 2 )]
+            [output.write( f"{pair[0]},{pair[1]}\n" ) for pair in combinations( selected, 2 )]
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( description="Generate location pairs from metadata with reasonable sampling" )

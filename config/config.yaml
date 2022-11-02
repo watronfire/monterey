@@ -1,5 +1,5 @@
 input_locations:
-  tree: "resources/global.tree"
+  tree: "resources/global_rerooted.tree"
   metadata: "resources/gisaid_metadata.csv"
   chn_metadata: "resources/early_chn.csv"
 

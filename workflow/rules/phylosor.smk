@@ -91,9 +91,9 @@ checkpoint generate_pairs:
             --min-completeness {params.completeness} \
             --output {output.pairs} \
             --graph {output.pair_graph} \
-            --summary {output.summary} \
-            --locations 'San Diego_CA' 'Quebec_CAN'
-        """
+            --summary {output.summary}
+       """
+            #--locations 'San Diego_CA' 'Québec_CAN'
 
 rule prune_tree_to_pair:
     message: "Prune tree to only sequences from pair: {wildcards.pair}"
