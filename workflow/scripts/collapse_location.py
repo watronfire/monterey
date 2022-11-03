@@ -106,8 +106,8 @@ if __name__ == "__main__":
 
     parser.add_argument( "--input", help="location of metadata", required=True )
     parser.add_argument( "--output", help="location to save appended metadata", required=True )
-    parser.add_argument( "--min-sequences", help="Keep locations with at least this many sequences", required=True )
-    parser.add_argument( "--min-completeness", help="Keep locations with sequences collected from at least this many epiweeks", required=True )
+    parser.add_argument( "--min-sequences", help="Keep locations with at least this many sequences", type=int, required=True )
+    parser.add_argument( "--min-completeness", help="Keep locations with sequences collected from at least this many epiweeks", type=float, required=True )
 
     args = parser.parse_args()
 
