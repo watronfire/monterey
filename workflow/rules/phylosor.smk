@@ -61,12 +61,17 @@ rule collapse_location_in_metadata:
     message: "Add column to metadata with most-relevant location data"
     input:
         metadata = rules.generate_metadata.output.combined_metadata
+    params:
+        sequences = config["pairs"]["min_sequences"],
+        completeness = config["pairs"]["min_completeness"]
     output:
         collapsed_metadata = "intermediates/collapse_location/metadata.csv.gz"
     shell:
         """
         python workflow/scripts/collapse_location.py \
             --input {input.metadata} \
+            --min-sequences {params.sequences} \
+            --min-completeness {params.completeness} \
             --output {output.collapsed_metadata}
         """
 
