@@ -65,7 +65,7 @@ rule collapse_location_in_metadata:
         sequences = config["pairs"]["min_sequences"],
         completeness = config["pairs"]["min_completeness"]
     output:
-        collapsed_metadata = "intermediates/collapse_location/metadata.csv.gz"
+        collapsed_metadata = "intermediates/collapse_location/metadata.csv"
     shell:
         """
         python workflow/scripts/collapse_location.py \
