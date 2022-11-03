@@ -111,4 +111,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    collapse_metadata( args.input, args.output )
+    collapse_metadata( args.input, args.output, args.min_sequences, args.min_completeness )
