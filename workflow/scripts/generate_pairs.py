@@ -66,7 +66,7 @@ def generate_pairs( md_loc, min_sequences, min_completeness, output_loc, graph_l
 
     prepare_graph( summary, min_sequences, min_completeness, graph_loc )
 
-    selected = summary.loc[(summary["completeness"]>0.75)&(summary["sequences"]>1000)].index
+    selected = summary.loc[(summary["completeness"]>min_completeness)&(summary["sequences"]>min_sequences)].index
     with open( output_loc, "w" ) as output:
         if locations is not None:
             for loc in locations:
@@ -79,8 +79,8 @@ if __name__ == "__main__":
 
     # Initialize arguments
     parser.add_argument( "--metadata", help="location of metadata", required=True )
-    parser.add_argument( "--min-sequences", help="Keep locations with at least this many sequences", required=True )
-    parser.add_argument( "--min-completeness", help="Keep locations with sequences collected from at least this many epiweeks", required=True )
+    parser.add_argument( "--min-sequences", help="Keep locations with at least this many sequences", type=int, required=True )
+    parser.add_argument( "--min-completeness", help="Keep locations with sequences collected from at least this many epiweeks", type=float, required=True )
     parser.add_argument( "--output", help="location to save pairs", required=True )
     parser.add_argument( "--graph", help="location to save diagnostic plot", required=True )
     parser.add_argument( "--summary", help="location to save summary statistics for each location", required=True )
