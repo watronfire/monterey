@@ -77,7 +77,7 @@ def get_passing_sites( df, min_sequences=1000, min_completeness=0.75 ):
     requirements = pd.concat( [seqs, completeness], axis=1, ignore_index=False )
     requirements.columns = ["sequences", "completeness"]
 
-    return requirements.loc[(requirements["sequences"]>=min_completeness)&(requirements["completeness"]>=min_completeness)].index.to_list()
+    return requirements.loc[(requirements["sequences"]>=min_sequences)&(requirements["completeness"]>=min_completeness)].index.to_list()
 
 def collapse_metadata( md_loc, output, min_sequences, min_completeness ):
     md = pd.read_csv( md_loc, parse_dates=["date_collected"] )
