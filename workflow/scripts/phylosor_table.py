@@ -158,7 +158,7 @@ def comparison_table( tree, metadata, queryA, nameA, queryB, nameB, window, meth
         output_df.append( entry )
 
         if verbose:
-            print( f"Completed {i} of {len(date_seq)} comparisons (took {time.time():.1f} seconds)" )
+            print( f"Completed {i} of {len(date_seq)} comparisons (took {start_time - time.time():.1f} seconds)" )
 
     headers = {
         "phylosor" : ["blA", "blB", "blBoth", "date", "siteA", "countA", "siteB", "countB"],
