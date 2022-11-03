@@ -77,7 +77,7 @@ def load_metadata( md_loc, tip_labels, verbose=True ):
     starting_time = time.time()
     metadata = pd.read_csv( md_loc, usecols=["accession_id", "date_collected", "site"], parse_dates=["date_collected"] )
     metadata = metadata.loc[metadata["accession_id"].isin( tip_labels )]
-    metadata["month"] = metadata["date_collected"].astype( 'datetime64[M]' )
+    metadata["month"] = metadata["date_collected"].to_numpy().astype('datetime64[M]')
     if verbose:
         print( f"Done in {time.time() - starting_time:.1f} seconds" )
     return metadata
