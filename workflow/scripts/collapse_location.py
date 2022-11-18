@@ -101,6 +101,32 @@ def collapse_metadata( md_loc, output, min_sequences, min_completeness ):
 
     md_add.to_csv( output, index=False )
 
+
+def collapse_metadata_alternative( md_loc, output ):
+    na_countries = ['Antigua and Barbuda', 'Bahamas', 'Barbados', 'Belize',
+                    'Bermuda', 'Canada', 'Costa Rica', 'Cuba',
+                    'Dominica', 'Dominican Republic', 'El Salvador', 'Guadeloupe', 'Grenada',
+                    'United States', 'Guatemala', 'Haiti', 'Honduras',
+                    'Jamaica', 'Mexico', 'Panama', 'Saint Barthélemy', 'Saint Kitts and Nevis',
+                    'Saint Lucia', 'Saint Martin', 'Saint Vincent and the Grenadines', 'Sint Maarten']
+    md = pd.read_csv( md_loc )
+    md["site"] = "Other"
+    md.loc[md["country"].isin( na_countries),"site"] = md["country"]
+    md.loc[md["country"].isin( ["Canada", "Mexico", "United States"] ), "site"] = md["division"]
+    md.loc[md["division"] == "California", "site"] = md["location"]
+    #md.loc[md["division"].isin( ["Guam", "Puerto Rico", "Virgin Islands", "Northern Mariana Islands"] ), "site"] = md["division"]
+
+    md.loc[(md["country"]=="United States")&(md["division"]!="California"),"site"] = md.loc[(md["country"]=="United States")&(md["division"]!="California"),"site"] + "_USA"
+    md.loc[(md["country"]=="Canada"), "site"] = md.loc[(md["country"]=="Canada"), "site"] + "_CAN"
+    md.loc[(md["country"]=="Mexico"), "site"] = md.loc[(md["country"]=="Mexico"), "site"] + "_MEX"
+    md.loc[md["division"]=="California", "site"] = md.loc[md["division"]=="California", "site"] + "_CA"
+
+    early = md.sort_values( "date_collected" ).head(50)["accession_id"].to_list()
+    md.loc[md["accession_id"].isin( early ),"site"] = "root"
+
+    md.to_csv( output, index=False )
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser( description="Adds column to metadata with most-relevant location data" )
 
@@ -108,7 +134,11 @@ if __name__ == "__main__":
     parser.add_argument( "--output", help="location to save appended metadata", required=True )
     parser.add_argument( "--min-sequences", help="Keep locations with at least this many sequences", type=int, required=True )
     parser.add_argument( "--min-completeness", help="Keep locations with sequences collected from at least this many epiweeks", type=float, required=True )
+    parser.add_argument( "--alternative", action="store_true", help="Use non-greedy collapsing algorithm" )
 
     args = parser.parse_args()
 
-    collapse_metadata( args.input, args.output, args.min_sequences, args.min_completeness )
+    if args.alternative:
+        collapse_metadata_alternative( args.input, args.output )
+    else:
+        collapse_metadata( args.input, args.output, args.min_sequences, args.min_completeness )
