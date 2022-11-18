@@ -1,8 +1,6 @@
 # Main entrypoint of the workflow.
 configfile: "config/config.yaml"
 
-print( config["collapse_locations"]["sd_focus"] )
-
 rule all:
     input:
         pairs = "intermediates/pairs/pairs.txt",
