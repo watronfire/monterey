@@ -57,25 +57,25 @@ rule metadata_prune:
 #        gotree rename --map {output.renames} < {input.tree} > {output.tree}
 #        """
 
-    rule collapse_location_in_metadata:
-        message: "Add column to metadata with most-relevant location data"
-        input:
-            metadata = rules.generate_metadata.output.combined_metadata
-        params:
-            sequences = config["pairs"]["min_sequences"],
-            completeness = config["pairs"]["min_completeness"],
-            alternative = "--alternative" if config["collapse_locations"]["sd_focus"] else ""
-        output:
-            collapsed_metadata = "intermediates/collapse_location/metadata.csv"
-        shell:
-            """
-            python workflow/scripts/collapse_location.py \
-                --input {input.metadata} \
-                --min-sequences {params.sequences} \
-                --min-completeness {params.completeness} \
-                {params.alternative} \
-                --output {output.collapsed_metadata}
-            """
+rule collapse_location_in_metadata:
+    message: "Add column to metadata with most-relevant location data"
+    input:
+        metadata = rules.generate_metadata.output.combined_metadata
+    params:
+        sequences = config["pairs"]["min_sequences"],
+        completeness = config["pairs"]["min_completeness"],
+        alternative = "--alternative" if config["collapse_locations"]["sd_focus"] else ""
+    output:
+        collapsed_metadata = "intermediates/collapse_location/metadata.csv"
+    shell:
+        """
+        python workflow/scripts/collapse_location.py \
+            --input {input.metadata} \
+            --min-sequences {params.sequences} \
+            --min-completeness {params.completeness} \
+            {params.alternative} \
+            --output {output.collapsed_metadata}
+        """
 
 checkpoint generate_pairs:
     message: "Do a robust search through the metadata for all locations which have greater than {params.sequences} and greater than {params.completeness} epiweeks covered."
