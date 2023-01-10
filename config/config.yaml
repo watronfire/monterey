@@ -1,6 +1,6 @@
 input_locations:
   tree: "resources/global_rerooted.tree"
-  metadata: "resources/output_2022-08-02.csv.gz"
+  metadata: "resources/output_2022-11-16.csv.gz"
   chn_metadata: "resources/early_chn.csv"
 
 columns:

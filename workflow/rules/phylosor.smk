@@ -118,7 +118,6 @@ rule prune_tree_to_pair:
         date_max = config["prune_tree_to_pair"]["date_max"]
     output:
         pruned_tree = "results/trees/{pair}/{pair}.tree"
-    group: "analysis"
     shell:
         """
         python workflow/scripts/prune_to_pair.py \
@@ -145,7 +144,6 @@ rule compute_phylosor:
         shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
     output:
         results = "results/phylosor/{pair}/{pair}.{status}.{num}.csv"
-    group: "analysis"
     shell:
         """
         python workflow/scripts/phylosor_table.py \
