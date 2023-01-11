@@ -14,11 +14,28 @@ def metadata_prune( metadata, tree, kind, sampling, location, missing_loc, outpu
     missing = np.setdiff1d( tree_tips, md["accession_id"].to_list() )
     print( f"{len( missing )} of {len( md['strain'] )} tips missing" )
 
-    sampling_strat = pd.read_csv( sampling, parse_dates=["month"] )
-    if kind == "fraction":
-        pass
-    elif kind == "count":
-        pass
+
+    if kind in ["fraction", "count"]:
+        sampling_strat = pd.read_csv( sampling, parse_dates=["month"], index_col=0 )
+        sampling_strat["fraction"] = sampling_strat["fraction"].astype( int )
+        sampling_strat["count"] = sampling_strat["count"].astype( int )
+        sampling_strat = sampling_strat[kind.to_dict()]
+
+        tree_md = md.loc[md["accession_id"].isin(tree_tips)&(md["location"]==location)]
+        tree_md["month"] = tree_md["date_collected"].astype( "datetime64[M]" )
+
+        sampled = []
+        for ts, df in tree_md.groupby( "month" ):
+            requested = sampling_strat.get( ts, 0 ) # Not sure if this should be 0 or all sequences.
+            requested = min( requested, df.shape[0] )
+
+            if requested == 0:
+                continue
+
+            sampled.append( df.sample( n=requested, replace=False ) )
+        sampled = pd.concat( sampled )
+
+        missing = np.concatenate((missing, tree_md.loc[~tree_md["accession_id"].isin( sampled["accession_id"] ),"accession_id"].to_list()))
 
     with open( missing_loc, "w" ) as missing_file:
         missing_file.write( "\n".join( missing ) )
