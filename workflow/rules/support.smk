@@ -23,7 +23,7 @@ def generate_phylosor_results( wildcards ):
 
     #results = expand( "results/phylosor/{pair}/{pair}.null.{num}.csv", pair=PAIRS, num=range( 1,11 ) )
     results = expand( "results/phylosor/{kind}.{num}/{pair}/{pair}.actual.csv", pair=PAIRS, kind=["actual"], num=[1] )
-    results.extende( expand( "results/phylosor/{kind}.{num}/{pair}/{pair}.actual.csv", pair=PAIRS, kind=["fraction", "count"], num=range(1, 11) ) )
+    results.extend( expand( "results/phylosor/{kind}.{num}/{pair}/{pair}.actual.csv", pair=PAIRS, kind=["fraction", "count"], num=range(1, 11) ) )
     return results
 
 def generate_hill_results( wildcards ):
