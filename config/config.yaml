@@ -11,6 +11,9 @@ columns:
 generate_nulls:
   groupby: "site"
 
+metadata_prune:
+  config: "resources/monthly_subsample.csv"
+
 prune_tree_to_pair:
   date_max: "2022-11-01"
 

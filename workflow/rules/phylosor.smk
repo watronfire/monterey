@@ -20,27 +20,24 @@ rule metadata_prune:
     message: "Remove tips of tree that aren't found in metadata"
     input:
         tree = config["input_locations"]["tree"],
-        metadata = rules.generate_metadata.output.combined_metadata
+        metadata = rules.generate_metadata.output.combined_metadata,
+        sampling = config["metadata_prune"]["config"]
+    params:
+        kind = lambda wildcards: wildcards.kind
     output:
-        missing = "intermediates/metadata_prune/missing.txt",
-        tree = "intermediates/metadata_prune/cog_md.tree",
-    run:
-        import numpy as np
-        import pandas as pd
-
-        md = pd.read_csv( input.metadata, parse_dates=["date_collected"] )
-
-        tree_tips = [i for i in shell( "gotree labels < {input.tree}", iterable=True )]
-
-        # Identify tips that are in tree but aren't in metadata
-        missing = np.setdiff1d( tree_tips, md["accession_id"].to_list() )
-        print( f"{len(missing)} of {len(md['strain'])} tips missing" )
-
-        with open( output.missing, "w" ) as missing_file:
-            missing_file.write( "\n".join( missing ) )
-
-        # Prune tips that are missing
-        shell( "gotree prune --tipfile {output.missing} < {input.tree} > {output.tree}" )
+        missing = "intermediates/metadata_prune/missing.{kind}.{num}.txt",
+        tree = "intermediates/metadata_prune/cog_md.{kind}.{num}.tree",
+    shell:
+        """
+        python metadata_prune \
+            --tree {input.tree} \
+            --metadata {input.metadata} \
+            --sampling {input.sampling} \
+            --location "San Diego" \
+            --kind {params.kind} \
+            --missing {output.missing} \
+            --output {output.tree} \
+        """
 
 
 #rule rename_tree_to_accession:
@@ -117,7 +114,7 @@ rule prune_tree_to_pair:
         location_col = config["columns"]["location_col"],
         date_max = config["prune_tree_to_pair"]["date_max"]
     output:
-        pruned_tree = "results/trees/{pair}/{pair}.tree"
+        pruned_tree = "results/trees/{kind}.{num}/{pair}/{pair}.tree"
     shell:
         """
         python workflow/scripts/prune_to_pair.py \
@@ -134,7 +131,6 @@ rule prune_tree_to_pair:
 rule compute_phylosor:
     message: "Compute {wildcards.status} phylosor across time for pair: {wildcards.pair}"
     conda: "../envs/general.yaml"
-    log: "logs/{pair}.{status}.{num}.phylosor.txt"
     input:
         tree = rules.prune_tree_to_pair.output.pruned_tree,
         metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
@@ -143,7 +139,7 @@ rule compute_phylosor:
         window_size = config["compute_phylosor"]["window_size"],
         shuffle = lambda wildcards: "--shuffle" if wildcards.status == "null" else ""
     output:
-        results = "results/phylosor/{pair}/{pair}.{status}.{num}.csv"
+        results = "results/phylosor/{kind}.{num}/{pair}/{pair}.{status}.csv"
     shell:
         """
         python workflow/scripts/phylosor_table.py \
@@ -155,45 +151,6 @@ rule compute_phylosor:
             --output {output.results} \
         """
 
-rule compute_hill:
-    message: "Compute {wildcards.status} hill number across time for pair: {wildcards.pair}"
-    conda: "../envs/general.yaml"
-    log: "logs/{pair}.{status}.{num}.hill.txt"
-    input:
-        tree=rules.prune_tree_to_pair.output.pruned_tree,
-        metadata=rules.collapse_location_in_metadata.output.collapsed_metadata
-    params:
-        pair_list=get_pair_list,
-        window_size=config["compute_phylosor"]["window_size"],
-        shuffle=lambda wildcards : "--shuffle" if wildcards.status == "null" else ""
-    output:
-        results = "results/hill/{pair}/{pair}.{status}.{num}.csv"
-    shell:
-        """
-        python workflow/scripts/phylosor_table.py \
-            --tree {input.tree} \
-            --metadata {input.metadata} \
-            --pair-list {params.pair_list:q} \
-            --window-size {params.window_size} \
-            {params.shuffle} \
-            --output {output.results} \
-            --hill
-        """
-
-rule combine_hill:
-    message: "Combine hill results for all comparisons"
-    conda: "../envs/general.yaml"
-    log: "logs/combine_results.txt"
-    input:
-        results = generate_hill_results
-    output:
-        results = "results/output/hill_results.csv"
-    shell:
-        """
-        python workflow/scripts/combine_results.py \
-            {input.results} \
-            {output.results}
-        """
 
 rule combine_results:
     message: "Combine phylosor results for all comparisons"
@@ -209,17 +166,3 @@ rule combine_results:
             {input.results} \
             {output.results}
         """
-#
-#rule plot_results_newnull:
-#    message: "Plot phylosor metric for pair: {wildcards.pair}"
-#    conda: "../envs/general.yaml"
-#    log: "logs/{pair}.plotting.log"
-#    input:
-#        metadata = config["input_locations"]["metadata"],
-#        results = rules.combine_results_newnull.output.results
-#    params:
-#        pair_list = lambda wildcards: PAIRS[wildcards.pair]
-#    output:
-#        plot = "results/phylosor_plot/{pair}.phylosor.pdf"
-#    script:
-#        "../scripts/plot_phylosor.py"
