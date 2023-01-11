@@ -34,7 +34,7 @@ if __name__ == "__main__":
     parser.add_argument( "--metadata", help="ouput location" )
     parser.add_argument( "--sampling", help="ouput location" )
     parser.add_argument( "--location", help="ouput location" )
-    parser.add_argument( "--type", help="ouput location" )
+    parser.add_argument( "--kind", help="ouput location" )
     parser.add_argument( "--missing", help="ouput location" )
     parser.add_argument( "--output", help="ouput location" )
 
@@ -46,6 +46,6 @@ if __name__ == "__main__":
         args.kind,
         args.sampling,
         args.location,
-        args.missing_loc,
+        args.missing,
         args.output
     )
