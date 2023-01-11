@@ -21,7 +21,7 @@ def metadata_prune( metadata, tree, kind, sampling, location, missing_loc, outpu
         sampling_strat["count"] = sampling_strat["count"].astype( int )
         sampling_strat = sampling_strat[kind].to_dict()
 
-        tree_md = md.loc[md["accession_id"].isin(tree_tips)&(md["location"]==location)]
+        tree_md = md.loc[md["accession_id"].isin(tree_tips)&(md["location"]==location)].copy()
         tree_md["month"] = tree_md["date_collected"].astype( "datetime64[M]" )
 
         sampled = []
