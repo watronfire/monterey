@@ -103,7 +103,6 @@ checkpoint generate_pairs:
 rule prune_tree_to_pair:
     message: "Prune tree to only sequences from pair: {wildcards.pair}"
     conda: "../envs/general.yaml"
-    log: "logs/{pair}.pruning.txt"
     input:
         tree = rules.metadata_prune.output.tree,
         metadata = rules.collapse_location_in_metadata.output.collapsed_metadata
