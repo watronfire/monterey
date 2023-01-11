@@ -29,7 +29,7 @@ rule metadata_prune:
         tree = "intermediates/metadata_prune/cog_md.{kind}.{num}.tree",
     shell:
         """
-        python metadata_prune \
+        python workflow/scripts/metadata_prune.py \
             --tree {input.tree} \
             --metadata {input.metadata} \
             --sampling {input.sampling} \
