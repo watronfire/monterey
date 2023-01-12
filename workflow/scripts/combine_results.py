@@ -2,17 +2,19 @@ import pandas as pd
 import os
 import argparse
 
+
+STRUCTURE = "results/phylosor/{kind}.{num}/{pair}/{pair}.actual.csv"
 def combine_results( results, output ):
     line_count = 0
     output_df = []
     for result in results:
         result_df = pd.read_csv( result )
 
-        name = os.path.splitext( os.path.split( result )[1] )[0]
-        name_split = name.split( "." )
-        assert len( name_split ) == 3, f"{name} is oddly formatted."
-        result_df["kind"] = name_split[1]
-        result_df["num"] = name_split[2]
+        name_split = result.split( "/" )
+        assert len( name_split ) == 5, f"{result} is oddly formatted."
+        kind_num = name_split[2].split( "." )
+        result_df["kind"] = kind_num[0]
+        result_df["num"] = kind_num[1]
         
         line_count += result_df.shape[0]
         
